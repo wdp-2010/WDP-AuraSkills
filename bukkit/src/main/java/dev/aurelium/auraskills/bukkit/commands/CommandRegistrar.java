@@ -265,6 +265,8 @@ public class CommandRegistrar {
         manager.registerCommand(new TraitCommand(plugin));
         manager.registerCommand(new JobsCommand(plugin));
         manager.registerCommand(new AntiAfkCommand(plugin));
+        manager.registerCommand(new CoinsCommand(plugin));
+        manager.registerCommand(new PayCommand(plugin));
     }
 
     public void registerSkillCommands(PaperCommandManager manager) {
