@@ -10,10 +10,10 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public record UserState(UUID uuid, Map<Skill, Integer> skillLevels, Map<Skill, Double> skillXp,
-        Map<String, StatModifier> statModifiers, Map<String, TraitModifier> traitModifiers, double mana) {
+        Map<String, StatModifier> statModifiers, Map<String, TraitModifier> traitModifiers, double mana, double skillCoins) {
 
     public UserState withUuid(UUID newUuid) {
-        return new UserState(newUuid, skillLevels, skillXp, statModifiers, traitModifiers, mana);
+        return new UserState(newUuid, skillLevels, skillXp, statModifiers, traitModifiers, mana, skillCoins);
     }
 
     public static UserState createEmpty(UUID uuid, AuraSkillsPlugin plugin) {
@@ -24,7 +24,7 @@ public record UserState(UUID uuid, Map<Skill, Integer> skillLevels, Map<Skill, D
             levels.put(skill, plugin.config().getStartLevel());
             xp.put(skill, 0.0);
         }
-        return new UserState(uuid, levels, xp, Map.of(), Map.of(), 0.0);
+        return new UserState(uuid, levels, xp, Map.of(), Map.of(), 0.0, 0.0);
     }
 
 }

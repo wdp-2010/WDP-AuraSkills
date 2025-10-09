@@ -82,6 +82,8 @@ public class BackupProvider {
             }
             // Save mana
             userNode.node("mana").set(state.mana());
+            // Save skill coins
+            userNode.node("skill_coins").set(state.skillCoins());
             // Save stat modifiers
             for (StatModifier modifier : state.statModifiers().values()) {
                 ConfigurationNode modifierNode = userNode.node("stat_modifiers").appendListNode();

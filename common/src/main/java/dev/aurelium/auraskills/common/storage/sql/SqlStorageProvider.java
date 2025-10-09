@@ -211,9 +211,11 @@ public class SqlStorageProvider extends StorageProvider {
                     Map<String, TraitModifier> traitModifiers = loadTraitModifiers(connection, uuid, userId);
                     // Load mana
                     double mana = resultSet.getDouble("mana");
+                    // Load skill coins
+                    double skillCoins = resultSet.getDouble("skill_coins");
 
                     connection.close();
-                    return new UserState(uuid, skillLevelMaps.levels(), skillLevelMaps.xp(), statModifiers, traitModifiers, mana);
+                    return new UserState(uuid, skillLevelMaps.levels(), skillLevelMaps.xp(), statModifiers, traitModifiers, mana, skillCoins);
                 }
             }
         }
@@ -222,12 +224,14 @@ public class SqlStorageProvider extends StorageProvider {
     @Override
     public void applyState(UserState state) throws Exception {
         // Insert into users database
-        String usersQuery = "INSERT INTO " + TABLE_PREFIX + "users (player_uuid, mana) VALUES (?, ?) ON DUPLICATE KEY UPDATE mana = ?, last_updated = CURRENT_TIMESTAMP";
+        String usersQuery = "INSERT INTO " + TABLE_PREFIX + "users (player_uuid, mana, skill_coins) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE mana = ?, skill_coins = ?, last_updated = CURRENT_TIMESTAMP";
         try (Connection connection = pool.getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(usersQuery)) {
                 statement.setString(1, state.uuid().toString());
                 statement.setDouble(2, state.mana());
-                statement.setDouble(3, state.mana());
+                statement.setDouble(3, state.skillCoins());
+                statement.setDouble(4, state.mana());
+                statement.setDouble(5, state.skillCoins());
                 statement.executeUpdate();
             }
             // Insert into skill_levels database
@@ -302,7 +306,7 @@ public class SqlStorageProvider extends StorageProvider {
     }
 
     private void saveUsersTable(Connection connection, User user) throws SQLException {
-        String usersQuery = "INSERT INTO " + TABLE_PREFIX + "users (player_uuid, locale, mana) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE locale = ?, mana = ?, last_updated = CURRENT_TIMESTAMP";
+        String usersQuery = "INSERT INTO " + TABLE_PREFIX + "users (player_uuid, locale, mana, skill_coins) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE locale = ?, mana = ?, skill_coins = ?, last_updated = CURRENT_TIMESTAMP";
         try (PreparedStatement statement = connection.prepareStatement(usersQuery)) {
             statement.setString(1, user.getUuid().toString());
             int curr = 2; // Current index to set
@@ -313,6 +317,7 @@ public class SqlStorageProvider extends StorageProvider {
                     statement.setNull(curr++, Types.VARCHAR);
                 }
                 statement.setDouble(curr++, user.getMana());
+                statement.setDouble(curr++, user.getSkillCoins());
             }
             statement.executeUpdate();
         }
