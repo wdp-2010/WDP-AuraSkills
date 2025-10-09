@@ -646,6 +646,7 @@ public class SqlStorageProvider extends StorageProvider {
                 int currentId = -1;
                 UUID uuid = null;
                 double mana = 0;
+                double skillCoins = 0;
 
                 Map<Skill, Integer> lvl = new ConcurrentHashMap<>();
                 Map<Skill, Double> xp = new ConcurrentHashMap<>();
@@ -654,24 +655,25 @@ public class SqlStorageProvider extends StorageProvider {
                     int userId = rs.getInt(1);
 
                     if (userId != currentId) { // Flush previous user
-                        checkAddUserState(ignoreOnline, skipModifiers, states, connection, currentId, uuid, mana, lvl, xp);
+                        checkAddUserState(ignoreOnline, skipModifiers, states, connection, currentId, uuid, mana, skillCoins, lvl, xp);
 
                         // Start new user
                         currentId = userId;
                         uuid = UUID.fromString(rs.getString(2));
                         mana = rs.getDouble(3);
+                        skillCoins = rs.getDouble(4);
                         lvl = new ConcurrentHashMap<>();
                         xp = new ConcurrentHashMap<>();
                     }
 
-                    Skill skill = skillCache.get(rs.getString(4));
+                    Skill skill = skillCache.get(rs.getString(5));
                     if (skill != null) {
-                        lvl.put(skill, rs.getInt(5));
-                        xp.put(skill, rs.getDouble(6));
+                        lvl.put(skill, rs.getInt(6));
+                        xp.put(skill, rs.getDouble(7));
                     }
                 }
 
-                checkAddUserState(ignoreOnline, skipModifiers, states, connection, currentId, uuid, mana, lvl, xp);
+                checkAddUserState(ignoreOnline, skipModifiers, states, connection, currentId, uuid, mana, skillCoins, lvl, xp);
             }
         }
         return states;
@@ -683,7 +685,7 @@ public class SqlStorageProvider extends StorageProvider {
         @Language("SQL") String query;
         if (enableLastUpdatedFilter) {
             query = """
-                    SELECT u.user_id, player_uuid, mana, skill_name, skill_level, skill_xp
+                    SELECT u.user_id, player_uuid, mana, skill_coins, skill_name, skill_level, skill_xp
                     FROM auraskills_users u
                     LEFT JOIN auraskills_skill_levels s USING (user_id)
                     WHERE last_updated > ?
@@ -691,7 +693,7 @@ public class SqlStorageProvider extends StorageProvider {
                     """;
         } else {
             query = """
-                    SELECT u.user_id, player_uuid, mana, skill_name, skill_level, skill_xp
+                    SELECT u.user_id, player_uuid, mana, skill_coins, skill_name, skill_level, skill_xp
                     FROM auraskills_users u
                     LEFT JOIN auraskills_skill_levels s USING (user_id)
                     ORDER BY u.user_id
@@ -700,7 +702,7 @@ public class SqlStorageProvider extends StorageProvider {
         return query;
     }
 
-    private void checkAddUserState(boolean ignoreOnline, boolean skipModifiers, List<UserState> states, Connection connection, int currentId, UUID uuid, double mana, Map<Skill, Integer> lvl, Map<Skill, Double> xp) throws SQLException {
+    private void checkAddUserState(boolean ignoreOnline, boolean skipModifiers, List<UserState> states, Connection connection, int currentId, UUID uuid, double mana, double skillCoins, Map<Skill, Integer> lvl, Map<Skill, Double> xp) throws SQLException {
         if (currentId != -1) {
             boolean online = userManager.hasUser(uuid);
             if (!ignoreOnline || !online) {
@@ -713,7 +715,7 @@ public class SqlStorageProvider extends StorageProvider {
                     statMods = Collections.emptyMap();
                     traitMods = Collections.emptyMap();
                 }
-                states.add(new UserState(uuid, lvl, xp, statMods, traitMods, mana));
+                states.add(new UserState(uuid, lvl, xp, statMods, traitMods, mana, skillCoins));
             }
         }
     }

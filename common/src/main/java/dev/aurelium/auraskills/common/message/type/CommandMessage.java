@@ -197,7 +197,12 @@ public enum CommandMessage implements MessageKey {
     COINS_BALANCE,
     COINS_ADD_ADDED,
     COINS_SET_SET,
-    COINS_REMOVE_REMOVED;
+    COINS_REMOVE_REMOVED,
+    SHOP_INSUFFICIENT_FUNDS,
+    SHOP_PURCHASE_SUCCESS,
+    SHOP_XP_PURCHASE_SUCCESS,
+    SHOP_PURCHASE_FAILED,
+    SHOP_STAT_RESET_SUCCESS;
 
     private final String path;
 

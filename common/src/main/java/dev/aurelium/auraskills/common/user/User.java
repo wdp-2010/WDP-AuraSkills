@@ -554,7 +554,7 @@ public abstract class User {
         Map<Skill, Double> copiedXp = new ConcurrentHashMap<>(skillXp);
         Map<String, StatModifier> copiedStatModifiers = new ConcurrentHashMap<>(userStats.getStatModifiers());
         Map<String, TraitModifier> copiedTraitModifiers = new ConcurrentHashMap<>(userStats.getTraitModifiers());
-        return new UserState(uuid, copiedLevels, copiedXp, copiedStatModifiers, copiedTraitModifiers, mana);
+        return new UserState(uuid, copiedLevels, copiedXp, copiedStatModifiers, copiedTraitModifiers, mana, skillCoins);
     }
 
     public void applyState(UserState state) {

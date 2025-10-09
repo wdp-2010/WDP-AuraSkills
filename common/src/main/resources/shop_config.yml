@@ -1,0 +1,225 @@
+# +----------------------------------------------------------------------------+ #
+# |                        AuraSkills Shop Configuration                       | #
+# |                                                                            | #
+# |      Configure all shop pricing, sellable items, and buyable abilities    | #
+# |             NEVER hard-code values - everything goes here!                 | #
+# +----------------------------------------------------------------------------+ #
+
+# Shop feature toggles
+enabled: true
+debug_mode: false
+
+# Level Purchase Settings
+level_purchase:
+  enabled: true
+  # Base cost for level 1
+  base_cost: 100.0
+  # Exponential multiplier (cost = base * multiplier ^ (level / 10))
+  cost_multiplier: 1.5
+  # Per-skill overrides (optional)
+  skill_costs:
+    farming: 80.0
+    mining: 120.0
+    # Add more skills as needed
+
+# XP Purchase Settings (REMOVED - Use level purchase instead)
+xp_purchase:
+  enabled: false
+
+# Item Selling System
+sell_items:
+  enabled: true
+  # List of sellable items with their prices
+  items:
+    # Rare Ores
+    DIAMOND:
+      price: 50.0
+      display_name: "<aqua>Diamond"
+      lore:
+        - "<gray>A rare and valuable gem"
+        - "<yellow>Sells for: {price} coins"
+    EMERALD:
+      price: 75.0
+      display_name: "<green>Emerald"
+      lore:
+        - "<gray>A precious trading gem"
+        - "<yellow>Sells for: {price} coins"
+    NETHERITE_INGOT:
+      price: 200.0
+      display_name: "<dark_red>Netherite Ingot"
+      lore:
+        - "<gray>The strongest material"
+        - "<yellow>Sells for: {price} coins"
+    ANCIENT_DEBRIS:
+      price: 150.0
+      display_name: "<dark_purple>Ancient Debris"
+      lore:
+        - "<gray>Rare nether material"
+        - "<yellow>Sells for: {price} coins"
+    
+    # Rare Items
+    NETHER_STAR:
+      price: 500.0
+      display_name: "<white>Nether Star"
+      lore:
+        - "<gray>Dropped by the Wither"
+        - "<yellow>Sells for: {price} coins"
+    DRAGON_EGG:
+      price: 1000.0
+      display_name: "<light_purple>Dragon Egg"
+      lore:
+        - "<gray>The rarest trophy"
+        - "<yellow>Sells for: {price} coins"
+    ELYTRA:
+      price: 300.0
+      display_name: "<gray>Elytra"
+      lore:
+        - "<gray>Wings of flight"
+        - "<yellow>Sells for: {price} coins"
+    
+    # Enchanted Books (examples)
+    ENCHANTED_BOOK:
+      price: 25.0
+      display_name: "<purple>Enchanted Book"
+      lore:
+        - "<gray>Contains valuable enchantments"
+        - "<yellow>Sells for: {price} coins"
+    
+    # Rare Mob Drops
+    WITHER_SKELETON_SKULL:
+      price: 100.0
+      display_name: "<dark_gray>Wither Skeleton Skull"
+      lore:
+        - "<gray>A dark trophy"
+        - "<yellow>Sells for: {price} coins"
+    TRIDENT:
+      price: 150.0
+      display_name: "<aqua>Trident"
+      lore:
+        - "<gray>A powerful aquatic weapon"
+        - "<yellow>Sells for: {price} coins"
+    
+    # Valuable Blocks
+    BEACON:
+      price: 250.0
+      display_name: "<white>Beacon"
+      lore:
+        - "<gray>A light in the darkness"
+        - "<yellow>Sells for: {price} coins"
+    SHULKER_BOX:
+      price: 80.0
+      display_name: "<purple>Shulker Box"
+      lore:
+        - "<gray>Portable storage"
+        - "<yellow>Sells for: {price} coins"
+
+# Buyable Abilities System
+# These are SPECIAL abilities that must be purchased, separate from leveling
+buyable_abilities:
+  enabled: true
+  
+  # List of abilities that can be purchased
+  # Format: ability_id -> cost and requirements
+  abilities:
+    # Farming - Growth Aura (powerful AOE effect)
+    growth_aura:
+      cost: 5000.0
+      skill_requirement:
+        farming: 50
+      display_name: "<green>Growth Aura"
+      description:
+        - "<gray>Crops within 5 blocks grow faster"
+        - "<gray>A powerful farming enhancement"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Farming Level 50"
+        - "  <gray>• 5000 Skill Coins"
+    
+    # Foraging - Shredder (chance-based enhancement)
+    shredder:
+      cost: 4000.0
+      skill_requirement:
+        foraging: 40
+      display_name: "<red>Shredder"
+      description:
+        - "<gray>Chance to deal 3x durability damage"
+        - "<gray>Destroy tools faster for more XP"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Foraging Level 40"
+        - "  <gray>• 4000 Skill Coins"
+    
+    # Fighting - Bleed (combat advantage)
+    bleed:
+      cost: 6000.0
+      skill_requirement:
+        fighting: 60
+      display_name: "<dark_red>Bleed"
+      description:
+        - "<gray>Chance to make enemies bleed"
+        - "<gray>Powerful in extended combat"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Fighting Level 60"
+        - "  <gray>• 6000 Skill Coins"
+    
+    # Agility - Thunder Fall (rare ability)
+    thunder_fall:
+      cost: 7000.0
+      skill_requirement:
+        agility: 70
+      display_name: "<yellow>Thunder Fall"
+      description:
+        - "<gray>Strike like lightning from above"
+        - "<gray>Deal massive fall damage to enemies"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Agility Level 70"
+        - "  <gray>• 7000 Skill Coins"
+    
+    # Alchemy - Lingering (advanced brewing)
+    lingering:
+      cost: 5500.0
+      skill_requirement:
+        alchemy: 55
+      display_name: "<pink>Lingering"
+      description:
+        - "<gray>Brew lingering potions"
+        - "<gray>Master alchemist ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Alchemy Level 55"
+        - "  <gray>• 5500 Skill Coins"
+    
+    # Healing - Revival (ultimate ability)
+    revival:
+      cost: 10000.0
+      skill_requirement:
+        healing: 80
+      display_name: "<light_purple>Revival"
+      description:
+        - "<gray>Chance to revive on death"
+        - "<gray>The ultimate survival ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Healing Level 80"
+        - "  <gray>• 10000 Skill Coins"
+
+# Balance Settings
+balance:
+  # Maximum transaction amount per purchase
+  max_transaction: 100000.0
+  # Minimum balance warning threshold
+  low_balance_warning: 100.0
+  # Enable transaction logging
+  log_transactions: true
+
+# Display Settings
+display:
+  # Number format for prices
+  price_format: "%.0f"
+  # Currency symbol/name
+  currency_name: "Skill Coins"
+  currency_symbol: "⛁"
+  # Show balance in menu title
+  show_balance_in_title: true

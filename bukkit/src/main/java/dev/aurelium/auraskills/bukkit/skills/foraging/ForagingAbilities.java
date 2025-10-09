@@ -83,6 +83,7 @@ public class ForagingAbilities extends BukkitAbilityImpl {
         boolean isAxe = false;
         switch (mat) {
             case NETHERITE_AXE, DIAMOND_AXE, IRON_AXE, GOLDEN_AXE, STONE_AXE, WOODEN_AXE -> isAxe = true;
+            default -> { }
         }
         if (!isAxe) {
             return;

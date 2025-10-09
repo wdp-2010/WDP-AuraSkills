@@ -163,9 +163,10 @@ public class BackupProvider {
                 traitModifiers.put(name, traitModifier);
             }
             double mana = userNode.node("mana").getDouble();
+            double skillCoins = userNode.node("skill_coins").getDouble();
 
             // Create user state
-            UserState state = new UserState(uuid, skillLevels, skillXp, statModifiers, traitModifiers, mana);
+            UserState state = new UserState(uuid, skillLevels, skillXp, statModifiers, traitModifiers, mana, skillCoins);
 
             plugin.getStorageProvider().applyState(state); // Save the state
         }
@@ -183,7 +184,7 @@ public class BackupProvider {
                 loadSkillNode(skillNode, skillLevels, skillXp);
             }
             // Create user state from level and xp maps with empty modifiers and mana
-            UserState state = new UserState(uuid, skillLevels, skillXp, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), 0);
+            UserState state = new UserState(uuid, skillLevels, skillXp, new ConcurrentHashMap<>(), new ConcurrentHashMap<>(), 0, 0);
 
             plugin.getStorageProvider().applyState(state); // Save the state
         }

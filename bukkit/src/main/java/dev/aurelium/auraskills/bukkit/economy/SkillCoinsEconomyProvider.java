@@ -84,7 +84,7 @@ public class SkillCoinsEconomyProvider implements Economy {
 
     @Override
     public double getBalance(OfflinePlayer player) {
-        User user = plugin.getUserManager().getUserIfLoaded(player.getUniqueId());
+        User user = plugin.getUserManager().getUser(player.getUniqueId());
         if (user != null) {
             return coinsManager.getBalance(user);
         }
@@ -134,7 +134,7 @@ public class SkillCoinsEconomyProvider implements Economy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot withdraw negative funds");
         }
 
-        User user = plugin.getUserManager().getUserIfLoaded(player.getUniqueId());
+        User user = plugin.getUserManager().getUser(player.getUniqueId());
         if (user == null) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "User not loaded");
         }
@@ -173,7 +173,7 @@ public class SkillCoinsEconomyProvider implements Economy {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "Cannot deposit negative funds");
         }
 
-        User user = plugin.getUserManager().getUserIfLoaded(player.getUniqueId());
+        User user = plugin.getUserManager().getUser(player.getUniqueId());
         if (user == null) {
             return new EconomyResponse(0, 0, EconomyResponse.ResponseType.FAILURE, "User not loaded");
         }

@@ -89,7 +89,7 @@ public class StorageCommand extends BaseCommand {
                     skipped++;
                     continue;
                 }
-                UserState newState = new UserState(state.uuid(), state.skillLevels(), state.skillXp(), Map.of(), Map.of(), state.mana());
+                UserState newState = new UserState(state.uuid(), state.skillLevels(), state.skillXp(), Map.of(), Map.of(), state.mana(), state.skillCoins());
                 try {
                     storage.applyState(newState);
                     success++;

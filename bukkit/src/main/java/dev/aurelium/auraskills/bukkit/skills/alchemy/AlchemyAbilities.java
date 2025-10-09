@@ -100,6 +100,7 @@ public class AlchemyAbilities extends BukkitAbilityImpl {
             case AWKWARD, MUNDANE, THICK, WATER -> {
                 return false;
             }
+            default -> { }
         }
         return switch (potionType.toString()) {
             // INSTANT_DAMAGE and INSTANT_HEAL are replaced by HARMING and HEALING in 1.20.5

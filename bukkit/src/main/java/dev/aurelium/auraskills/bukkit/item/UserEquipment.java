@@ -71,6 +71,7 @@ public class UserEquipment {
             case CHEST -> chest = item;
             case LEGS -> legs = item;
             case FEET -> feet = item;
+            default -> { }
         }
     }
 

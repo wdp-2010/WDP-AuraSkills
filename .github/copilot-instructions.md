@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-AuraSkills is a multi-module Minecraft RPG skills plugin for Spigot/Paper. The codebase is split into **4 distinct modules** with clear separation of concerns:
+AuraSkills is a multi-module Minecraft RPG skills plugin for Spigot/Paper with an integrated Skill Coins economy and shop system. The codebase is split into **4 distinct modules** with clear separation of concerns:
 
 - **`api/`** - Platform-independent API (`dev.aurelium:auraskills-api`, Java 8 compatible)
 - **`api-bukkit/`** - Bukkit-specific API extensions (`dev.aurelium:auraskills-api-bukkit`, depends on `api`)
@@ -135,6 +135,31 @@ Use IntelliJ Checkstyle-IDEA plugin with `config/checkstyle/checkstyle.xml` for 
 - MockBukkit for Bukkit API mocking (`bukkit/src/test/`)
 - Test fixtures in `common/src/testFixtures/` for shared test utilities
 - Example: `LeaderboardManagerTest` uses MySQL container setup in `@BeforeEach`
+
+## Shop System Architecture
+
+### Core Components
+- **SkillPointsShop** (`common/economy/`) - Handles shop logic, pricing calculations, and transactions
+- **ShopMenu** (`bukkit/menus/`) - Main shop interface with three sections: Sell, Buy Levels, Buy Abilities
+- **shop.yml** (`bukkit/resources/menus/`) - Menu configuration supporting multiple pages
+- **shop_config.yml** (`common/resources/`) - Shop pricing, sellable items, buyable abilities configuration
+
+### Configuration-Driven Design
+- **NEVER hard-code prices** - all values must be in `shop_config.yml`
+- **Sellable items**: Configure material, sell price, and display settings
+- **Buyable abilities**: Define which abilities can be purchased, pricing tiers, and requirements
+- **Level pricing**: Base cost and multiplier configurable per skill or globally
+- **Balance considerations**: Ensure economy remains challenging but rewarding
+
+### Message System
+- All shop messages in `messages_en.yml` under `commands.shop.*`
+- Use `TextUtil.replace()` for placeholder substitution
+- Always pass `Locale` parameter for multi-language support
+- Message keys defined in `CommandMessage` enum
+
+### Debug Commands
+- `/sk shop debug` - Display current shop state, prices, and player balance
+- `/sk shop reload` - Reload shop configuration without server restart
 
 ## Commit Guidelines
 
