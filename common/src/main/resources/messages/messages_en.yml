@@ -670,6 +670,21 @@ commands:
     resetcooldown:
       cooldown_reset: "<gray>Cooldown for <aqua>{ability} <gray>has been reset for player <gold>{player}"
       desc: Resets a specific mana ability cooldown for a player, optionally filling up mana.
+  pay:
+    sent: "<gray>You sent <gold>{amount} SkillCoins <gray>to <aqua>{player}"
+    received: "<gray>You received <gold>{amount} SkillCoins <gray>from <aqua>{player}"
+    insufficient_funds: "<red>You don't have enough SkillCoins! <gray>(Balance: <gold>{balance}<gray>)"
+    invalid_amount: "<red>Amount must be positive!"
+    cannot_pay_self: "<red>You cannot pay yourself!"
+    target_not_found: "<red>Target player not found!"
+  coins:
+    balance: "<gray>{player}'s balance: <gold>{balance} SkillCoins"
+    add:
+      added: "<gray>Added <gold>{amount} SkillCoins <gray>to <aqua>{player}<gray>. New balance: <gold>{balance}"
+    set:
+      set: "<gray>Set <aqua>{player}<gray>'s balance to <gold>{amount} SkillCoins"
+    remove:
+      removed: "<gray>Removed <gold>{amount} SkillCoins <gray>from <aqua>{player}<gray>. New balance: <gold>{balance}"
   unknown_skill: "<yellow>Unknown skill!"
   unknown_mana_ability: "<yellow>Unknown mana ability!"
   unknown_stat: "<yellow>Unknown stat!"

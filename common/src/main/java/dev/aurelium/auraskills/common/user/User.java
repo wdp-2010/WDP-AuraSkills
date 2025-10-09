@@ -86,7 +86,7 @@ public abstract class User {
         this.unclaimedItems = new LinkedList<>();
         this.shouldSave = true;
         this.mana = Traits.MAX_MANA.isEnabled() ? Traits.MAX_MANA.optionDouble("base") : 0.0;
-        this.skillCoins = 0.0;
+        this.skillCoins = plugin.config().getDouble(Option.SKILLCOINS_STARTING_BALANCE);
         this.multipliers = new ConcurrentHashMap<>();
         this.jobs = Sets.newConcurrentHashSet();
         this.jobsBatchData = new JobsBatchData();

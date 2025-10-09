@@ -440,6 +440,12 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
     }
 
     private void registerSkillCoinsEconomy() {
+        if (!configBoolean(Option.SKILLCOINS_ENABLED)) {
+            return;
+        }
+        if (!configBoolean(Option.SKILLCOINS_VAULT_PROVIDER_ENABLED)) {
+            return;
+        }
         if (getServer().getPluginManager().getPlugin("Vault") != null) {
             try {
                 getServer().getServicesManager().register(

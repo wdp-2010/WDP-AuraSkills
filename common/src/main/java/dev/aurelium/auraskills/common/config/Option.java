@@ -61,6 +61,11 @@ public enum Option {
     JOBS_INCOME_BATCHING_ENABLED("jobs.income.batching.enabled", OptionType.BOOLEAN),
     JOBS_INCOME_BATCHING_INTERVAL_MS("jobs.income.batching.interval_ms", OptionType.INT),
     JOBS_INCOME_BATCHING_DISPLAY_INDIVIDUAL("jobs.income.batching.display_individual", OptionType.BOOLEAN),
+    // SkillCoins options
+    SKILLCOINS_ENABLED("skillcoins.enabled", OptionType.BOOLEAN),
+    SKILLCOINS_STARTING_BALANCE("skillcoins.starting_balance", OptionType.DOUBLE),
+    SKILLCOINS_VAULT_PROVIDER_ENABLED("skillcoins.vault_provider_enabled", OptionType.BOOLEAN),
+    SKILLCOINS_SHOP_ENABLED("skillcoins.shop.enabled", OptionType.BOOLEAN),
     // Anti-AFK options
     ANTI_AFK_ENABLED("anti_afk.enabled", OptionType.BOOLEAN),
     ANTI_AFK_LOGGING_ENABLED("anti_afk.logging_enabled", OptionType.BOOLEAN),

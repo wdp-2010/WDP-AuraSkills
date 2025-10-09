@@ -118,6 +118,12 @@ jobs:
       enabled: false
       interval_ms: 2000
       display_individual: false
+skillcoins:
+  enabled: true
+  starting_balance: 0.0
+  vault_provider_enabled: true
+  shop:
+    enabled: true
 anti_afk:
   enabled: false
   logging_enabled: true
