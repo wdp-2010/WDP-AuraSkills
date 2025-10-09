@@ -66,6 +66,7 @@ import dev.aurelium.auraskills.common.api.implementation.ApiProvider;
 import dev.aurelium.auraskills.common.config.ConfigurateLoader;
 import dev.aurelium.auraskills.common.config.Option;
 import dev.aurelium.auraskills.common.config.preset.PresetManager;
+import dev.aurelium.auraskills.common.economy.SkillCoinsManager;
 import dev.aurelium.auraskills.common.event.EventHandler;
 import dev.aurelium.auraskills.common.hooks.HookManager;
 import dev.aurelium.auraskills.common.leaderboard.LeaderboardManager;
@@ -167,6 +168,7 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
     private PresetManager presetManager;
     private PlatformUtil platformUtil;
     private BukkitAntiAfkManager antiAfkManager;
+    private SkillCoinsManager skillCoinsManager;
     private boolean nbtApiEnabled;
     // For unit tests
     private final boolean isMock;
@@ -254,6 +256,8 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
         rewardManager = new RewardManager(this); // Loaded later
         lootManager = new BukkitLootManager(this); // Loaded later
         confirmManager = new ConfirmManager(this);
+        skillCoinsManager = new SkillCoinsManager(this);
+        registerSkillCoinsEconomy();
         CommandRegistrar commandRegistrar = new CommandRegistrar(this);
         commandManager = commandRegistrar.registerCommands();
         messageProvider.setACFMessages(commandManager);
@@ -435,6 +439,28 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
         storageProvider.startAutoSaving();
     }
 
+    private void registerSkillCoinsEconomy() {
+        if (!configBoolean(Option.SKILLCOINS_ENABLED)) {
+            return;
+        }
+        if (!configBoolean(Option.SKILLCOINS_VAULT_PROVIDER_ENABLED)) {
+            return;
+        }
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            try {
+                getServer().getServicesManager().register(
+                    net.milkbowl.vault.economy.Economy.class,
+                    new dev.aurelium.auraskills.bukkit.economy.SkillCoinsEconomyProvider(this),
+                    this,
+                    org.bukkit.plugin.ServicePriority.Highest
+                );
+                logger().info("Registered SkillCoins as Vault economy provider");
+            } catch (Exception e) {
+                logger().warn("Failed to register SkillCoins economy provider: " + e.getMessage());
+            }
+        }
+    }
+
     private void registerPriorityEvents() {
         PluginManager pm = getServer().getPluginManager();
         pm.registerEvents(new PlayerJoinQuit(this), this);
@@ -493,6 +519,10 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
 
     public ConfirmManager getConfirmManager() {
         return confirmManager;
+    }
+
+    public SkillCoinsManager getSkillCoinsManager() {
+        return skillCoinsManager;
     }
 
     public AuraSkillsBukkit getApiBukkit() {

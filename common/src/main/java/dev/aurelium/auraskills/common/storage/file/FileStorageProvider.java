@@ -79,6 +79,10 @@ public class FileStorageProvider extends StorageProvider {
         double mana = root.node("mana").getDouble();
         user.setMana(mana);
 
+        // Load skill coins
+        double skillCoins = root.node("skill_coins").getDouble(0.0);
+        user.setSkillCoins(skillCoins);
+
         // Load stat modifiers
         loadStatModifiers(root.node("stat_modifiers")).forEach((name, modifier) -> {
             if (modifier.isTemporary()) {
@@ -281,13 +285,16 @@ public class FileStorageProvider extends StorageProvider {
         // Load mana
         double mana = root.node("mana").getDouble();
 
+        // Load skill coins
+        double skillCoins = root.node("skill_coins").getDouble(0.0);
+
         // Load stat modifiers
         Map<String, StatModifier> statModifiers = loadStatModifiers(root.node("stat_modifiers"));
 
         // Load trait modifiers
         Map<String, TraitModifier> traitModifiers = loadTraitModifiers(root.node("trait_modifiers"));
 
-        return new UserState(uuid, skillLevelMaps.levels(), skillLevelMaps.xp(), statModifiers, traitModifiers, mana);
+        return new UserState(uuid, skillLevelMaps.levels(), skillLevelMaps.xp(), statModifiers, traitModifiers, mana, skillCoins);
     }
 
     @Override
@@ -306,6 +313,9 @@ public class FileStorageProvider extends StorageProvider {
 
         // Apply mana
         root.node("mana").set(state.mana());
+
+        // Apply skill coins
+        root.node("skill_coins").set(state.skillCoins());
 
         // Apply stat modifiers
         ConfigurationNode statModifiersNode = root.node("stat_modifiers");
@@ -341,6 +351,9 @@ public class FileStorageProvider extends StorageProvider {
 
         // Apply mana
         root.node("mana").set(user.getMana());
+
+        // Apply skill coins
+        root.node("skill_coins").set(user.getSkillCoins());
 
         // Apply stat modifiers
         ConfigurationNode statModifiersNode = root.node("stat_modifiers");

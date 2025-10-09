@@ -42,6 +42,7 @@ public class TableCreator {
                     "player_uuid varchar(40) not null, " +
                     "locale varchar(10) null, " +
                     "mana double not null, " +
+                    "skill_coins double not null default 0.0, " +
                     "constraint UUID unique (player_uuid))");
             plugin.logger().info("Created table " + tablePrefix + "users");
         }

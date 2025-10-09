@@ -50,6 +50,7 @@ public abstract class User {
     private final UserStats userStats;
 
     private double mana;
+    private double skillCoins;
     private Locale locale;
 
     private final Map<AbstractAbility, AbilityData> abilityData;
@@ -85,6 +86,7 @@ public abstract class User {
         this.unclaimedItems = new LinkedList<>();
         this.shouldSave = true;
         this.mana = Traits.MAX_MANA.isEnabled() ? Traits.MAX_MANA.optionDouble("base") : 0.0;
+        this.skillCoins = plugin.config().getDouble(Option.SKILLCOINS_STARTING_BALANCE);
         this.multipliers = new ConcurrentHashMap<>();
         this.jobs = Sets.newConcurrentHashSet();
         this.jobsBatchData = new JobsBatchData();
@@ -274,6 +276,33 @@ public abstract class User {
 
     public void setMana(double mana) {
         this.mana = mana;
+    }
+
+    public double getSkillCoins() {
+        return skillCoins;
+    }
+
+    public void setSkillCoins(double skillCoins) {
+        this.skillCoins = Math.max(0, skillCoins);
+        if (skillCoins > 0) {
+            blank = false;
+        }
+    }
+
+    public void addSkillCoins(double amount) {
+        setSkillCoins(this.skillCoins + amount);
+    }
+
+    public boolean hasSkillCoins(double amount) {
+        return this.skillCoins >= amount;
+    }
+
+    public boolean withdrawSkillCoins(double amount) {
+        if (hasSkillCoins(amount)) {
+            setSkillCoins(this.skillCoins - amount);
+            return true;
+        }
+        return false;
     }
 
     public Locale getLocale() {

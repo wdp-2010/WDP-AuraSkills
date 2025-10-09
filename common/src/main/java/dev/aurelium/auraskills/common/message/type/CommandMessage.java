@@ -187,7 +187,17 @@ public enum CommandMessage implements MessageKey {
     UNKNOWN_SKILL("unknown_skill"),
     UNKNOWN_MANA_ABILITY("unknown_mana_ability"),
     UNKNOWN_STAT("unknown_stat"),
-    UNKNOWN_TRAIT("unknown_trait");
+    UNKNOWN_TRAIT("unknown_trait"),
+    PAY_SENT,
+    PAY_RECEIVED,
+    PAY_INSUFFICIENT_FUNDS("pay.insufficient_funds"),
+    PAY_INVALID_AMOUNT("pay.invalid_amount"),
+    PAY_CANNOT_PAY_SELF("pay.cannot_pay_self"),
+    PAY_TARGET_NOT_FOUND("pay.target_not_found"),
+    COINS_BALANCE,
+    COINS_ADD_ADDED,
+    COINS_SET_SET,
+    COINS_REMOVE_REMOVED;
 
     private final String path;
 
