@@ -257,6 +257,7 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
         lootManager = new BukkitLootManager(this); // Loaded later
         confirmManager = new ConfirmManager(this);
         skillCoinsManager = new SkillCoinsManager(this);
+        registerSkillCoinsEconomy();
         CommandRegistrar commandRegistrar = new CommandRegistrar(this);
         commandManager = commandRegistrar.registerCommands();
         messageProvider.setACFMessages(commandManager);
@@ -436,6 +437,22 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
         StorageFactory storageFactory = new BukkitStorageFactory(this);
         storageProvider = storageFactory.createStorageProvider(type);
         storageProvider.startAutoSaving();
+    }
+
+    private void registerSkillCoinsEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") != null) {
+            try {
+                getServer().getServicesManager().register(
+                    net.milkbowl.vault.economy.Economy.class,
+                    new dev.aurelium.auraskills.bukkit.economy.SkillCoinsEconomyProvider(this),
+                    this,
+                    org.bukkit.plugin.ServicePriority.Highest
+                );
+                logger().info("Registered SkillCoins as Vault economy provider");
+            } catch (Exception e) {
+                logger().warn("Failed to register SkillCoins economy provider: " + e.getMessage());
+            }
+        }
     }
 
     private void registerPriorityEvents() {
