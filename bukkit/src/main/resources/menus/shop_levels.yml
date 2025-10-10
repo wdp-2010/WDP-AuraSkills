@@ -1,0 +1,49 @@
+title: "&6&lBuy Skill Levels"
+size: 54
+fill:
+  enabled: true
+  material: black_stained_glass_pane
+  pos: "all"
+
+items:
+  back:
+    material: arrow
+    pos: "5,1"
+    display_name: "&7← Back to Shop"
+    lore:
+      - "&8Return to main shop menu"
+    click_commands:
+      - "menu:shop"
+
+  balance:
+    material: sunflower
+    pos: "5,9"
+    display_name: "&6&lYour Balance"
+    lore:
+      - "&7SkillCoins: &e{skill_coins}"
+
+  skill:
+    pos: "2,2 2,3 2,4 2,5 2,6 2,7 2,8 3,2 3,3 3,4 3,5 3,6 3,7 3,8 4,2 4,3 4,4 4,5 4,6 4,7 4,8"
+    material: "{material}"
+    display_name: "&f{skill_name}"
+    lore:
+      - "&7Current Level: &f{current_level}"
+      - "&7Next Level: &a{next_level}"
+      - "&7Max Level: &e{max_level}"
+      - ""
+      - "&7Level Up Cost: &e{cost} SkillCoins"
+      - ""
+      - "{afford_lore}"
+      - "{level_lore}"
+      - ""
+      - "{click_lore}"
+    # Conditional lore based on affordability and max level
+    afford_lore:
+      can_afford: "&aYou can afford this level!"
+      cannot_afford: "&cNot enough SkillCoins! (Need {cost}, have {player_coins})"
+    level_lore:
+      not_maxed: "&aLevel available!"
+      maxed: "&cAlready at max level!"
+    click_lore:
+      can_purchase: "&eClick to buy level {next_level}!"
+      cannot_purchase: "&cCannot purchase!"

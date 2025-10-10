@@ -18,7 +18,12 @@ public class SkillPointsShop {
 
     private final AuraSkillsPlugin plugin;
     private final Map<String, Double> sellableItems;
+    private final Map<String, BuyableItem> buyableItems;
     private final Map<String, BuyableAbility> buyableAbilities;
+    private final Map<String, Integer> sellCooldowns; // Material -> cooldown seconds
+    private final Map<String, Map<String, Long>> playerCooldowns; // UUID -> (Material -> lastSellTime)
+    private final Map<String, Integer> itemStock; // Item -> current stock
+    private int globalSellCooldown;
     private double levelBaseCost;
     private double levelCostMultiplier;
     private final Map<String, Double> skillSpecificLevelCosts;
@@ -27,14 +32,20 @@ public class SkillPointsShop {
     public SkillPointsShop(AuraSkillsPlugin plugin) {
         this.plugin = plugin;
         this.sellableItems = new ConcurrentHashMap<>();
+        this.buyableItems = new ConcurrentHashMap<>();
         this.buyableAbilities = new ConcurrentHashMap<>();
+        this.sellCooldowns = new ConcurrentHashMap<>();
+        this.playerCooldowns = new ConcurrentHashMap<>();
+        this.itemStock = new ConcurrentHashMap<>();
         this.skillSpecificLevelCosts = new ConcurrentHashMap<>();
         loadConfiguration();
     }
 
     public void loadConfiguration() {
         sellableItems.clear();
+        buyableItems.clear();
         buyableAbilities.clear();
+        sellCooldowns.clear();
         skillSpecificLevelCosts.clear();
 
         try {
@@ -43,6 +54,9 @@ public class SkillPointsShop {
 
             // Load debug mode
             debugMode = config.node("debug_mode").getBoolean(false);
+
+            // Load global sell cooldown
+            globalSellCooldown = config.node("sell_items", "global_cooldown").getInt(0);
 
             // Load level purchase settings
             ConfigurationNode levelConfig = config.node("level_purchase");
@@ -60,13 +74,16 @@ public class SkillPointsShop {
             }
 
             // Load sellable items
-            loadSellableItems(config.node("sellable_items"));
+            loadSellableItems(config.node("sell_items", "items"));
+
+            // Load buyable items
+            loadBuyableItems(config.node("buy_items"));
 
             // Load buyable abilities
             loadBuyableAbilities(config.node("buyable_abilities"));
 
             if (debugMode) {
-                plugin.logger().info("Shop configuration loaded: " + sellableItems.size() + " sellable items, " + buyableAbilities.size() + " buyable abilities");
+                plugin.logger().info("Shop configuration loaded: " + sellableItems.size() + " sellable items, " + buyableItems.size() + " buyable items, " + buyableAbilities.size() + " buyable abilities");
             }
 
         } catch (IOException e) {
@@ -86,8 +103,40 @@ public class SkillPointsShop {
             double price = itemNode.node("price").getDouble(0.0);
             if (price > 0) {
                 sellableItems.put(material.toUpperCase(), price);
+                
+                // Load item-specific cooldown
+                int cooldown = itemNode.node("cooldown").getInt(globalSellCooldown);
+                if (cooldown > 0) {
+                    sellCooldowns.put(material.toUpperCase(), cooldown);
+                }
+                
                 if (debugMode) {
-                    plugin.logger().info("Loaded sellable item: " + material + " = " + price + " skill points");
+                    plugin.logger().info("Loaded sellable item: " + material + " = " + price + " skill points (cooldown: " + cooldown + "s)");
+                }
+            }
+        }
+    }
+
+    private void loadBuyableItems(ConfigurationNode node) {
+        if (node.virtual()) return;
+
+        for (Map.Entry<Object, ? extends ConfigurationNode> entry : node.childrenMap().entrySet()) {
+            String material = entry.getKey().toString();
+            ConfigurationNode itemNode = entry.getValue();
+
+            if (!itemNode.node("enabled").getBoolean(true)) continue;
+
+            String displayName = itemNode.node("display_name").getString(material);
+            int amount = itemNode.node("amount").getInt(1);
+            double price = itemNode.node("price").getDouble(0.0);
+            int stock = itemNode.node("stock").getInt(-1); // -1 = unlimited
+            
+            if (price > 0) {
+                BuyableItem buyableItem = new BuyableItem(material, displayName, amount, price, stock);
+                buyableItems.put(material.toUpperCase(), buyableItem);
+                if (debugMode) {
+                    String stockStr = stock == -1 ? "unlimited" : String.valueOf(stock);
+                    plugin.logger().info("Loaded buyable item: " + material + " = " + price + " skill coins (stock: " + stockStr + ")");
                 }
             }
         }
@@ -117,6 +166,109 @@ public class SkillPointsShop {
     }
 
     /**
+     * Sells an item for the user with cooldown checking
+     */
+    public SellResult sellItem(User user, String material, int amount) {
+        material = material.toUpperCase();
+        
+        // Check if item is sellable
+        if (!sellableItems.containsKey(material)) {
+            return new SellResult(false, 0, 0.0, "This item cannot be sold");
+        }
+        
+        // Check cooldown
+        long remainingCooldown = getRemainingCooldown(user.getUuid().toString(), material);
+        if (remainingCooldown > 0) {
+            return new SellResult(false, 0, 0.0, "cooldown:" + remainingCooldown);
+        }
+        
+        double pricePerItem = sellableItems.get(material);
+        double totalPrice = pricePerItem * amount;
+        
+        // Add coins to user
+        user.addSkillCoins(totalPrice);
+        
+        // Set cooldown
+        setCooldown(user.getUuid().toString(), material);
+        
+        if (debugMode) {
+            plugin.logger().info("User " + user.getUsername() + " sold " + amount + "x " + material + " for " + totalPrice + " skill coins");
+        }
+        
+        return new SellResult(true, amount, totalPrice, null);
+    }
+
+    /**
+     * Buys an item for the user with stock tracking
+     */
+    public BuyResult buyItem(User user, String material, int amount) {
+        material = material.toUpperCase();
+        
+        // Check if item is buyable
+        BuyableItem item = buyableItems.get(material);
+        if (item == null) {
+            return new BuyResult(BuyResult.BuyResultType.ITEM_NOT_FOUND, 0, 0.0, "This item is not available for purchase");
+        }
+        
+        // Check stock
+        if (item.getMaxStock() != -1 && getStock(material) < amount) {
+            return new BuyResult(BuyResult.BuyResultType.OUT_OF_STOCK, 0, 0.0, "Insufficient stock (available: " + getStock(material) + ")");
+        }
+        
+        double totalCost = item.getPrice() * amount;
+        
+        // Check if user has enough coins
+        if (user.getSkillCoins() < totalCost) {
+            return new BuyResult(BuyResult.BuyResultType.INSUFFICIENT_COINS, 0, 0.0, "Insufficient skill coins");
+        }
+        
+        // Deduct coins
+        user.setSkillCoins(user.getSkillCoins() - totalCost);
+        
+        // Update stock
+        if (item.getMaxStock() != -1) {
+            setStock(material, getStock(material) - amount);
+        }
+        
+        if (debugMode) {
+            plugin.logger().info("User " + user.getUsername() + " bought " + amount + "x " + material + " for " + totalCost + " skill coins");
+        }
+        
+        return new BuyResult(BuyResult.BuyResultType.SUCCESS, amount, totalCost, null);
+    }
+
+    /**
+     * Gets remaining cooldown for selling an item in seconds
+     */
+    public long getRemainingCooldown(String uuid, String material) {
+        material = material.toUpperCase();
+        
+        Map<String, Long> userCooldowns = playerCooldowns.get(uuid);
+        if (userCooldowns == null) {
+            return 0;
+        }
+        
+        Long lastSellTime = userCooldowns.get(material);
+        if (lastSellTime == null) {
+            return 0;
+        }
+        
+        int cooldownSeconds = sellCooldowns.getOrDefault(material, globalSellCooldown);
+        long timePassed = (System.currentTimeMillis() - lastSellTime) / 1000;
+        long remaining = cooldownSeconds - timePassed;
+        
+        return Math.max(0, remaining);
+    }
+
+    /**
+     * Sets a cooldown for selling an item
+     */
+    private void setCooldown(String uuid, String material) {
+        material = material.toUpperCase();
+        playerCooldowns.computeIfAbsent(uuid, k -> new ConcurrentHashMap<>()).put(material, System.currentTimeMillis());
+    }
+
+    /**
      * Calculates the cost to purchase a level for a specific skill
      */
     public double calculateLevelCost(Skill skill, int currentLevel) {
@@ -126,44 +278,51 @@ public class SkillPointsShop {
     }
 
     /**
-     * Purchases a level for the user if they have enough skill coins
+     * Gets current stock for an item
      */
-    public boolean purchaseLevel(User user, Skill skill) {
-        int currentLevel = user.getSkillLevel(skill);
-        double cost = calculateLevelCost(skill, currentLevel);
-
-        if (user.getSkillCoins() >= cost) {
-            user.setSkillCoins(user.getSkillCoins() - cost);
-            user.setSkillLevel(skill, currentLevel + 1);
-
-            if (debugMode) {
-                plugin.logger().info("User " + user.getUsername() + " purchased level for " + skill.getId().getKey() + " (cost: " + cost + ")");
-            }
-
-            return true;
-        }
-
-        return false;
+    public int getStock(String itemKey) {
+        BuyableItem item = buyableItems.get(itemKey.toUpperCase());
+        if (item == null) return 0;
+        
+        if (item.getMaxStock() <= 0) return Integer.MAX_VALUE; // Unlimited stock
+        
+        return itemStock.getOrDefault(itemKey.toUpperCase(), item.getMaxStock());
     }
 
     /**
-     * Sells an item stack for skill coins
+     * Sets stock for an item
      */
-    public SellResult sellItem(User user, String material, int amount) {
-        Double pricePerItem = sellableItems.get(material.toUpperCase());
+    public void setStock(String itemKey, int stock) {
+        itemStock.put(itemKey.toUpperCase(), Math.max(0, stock));
+    }
+
+    /**
+     * Purchases a level for the user if they have enough skill coins
+     */
+    public BuyResult purchaseLevel(User user, Skill skill) {
+        int currentLevel = user.getSkillLevel(skill);
+        int nextLevel = currentLevel + 1;
         
-        if (pricePerItem == null) {
-            return new SellResult(false, 0, 0, "Item not sellable");
+        // Check if already at max level
+        int maxLevel = 100; // Default max level
+        if (currentLevel >= maxLevel) {
+            return new BuyResult(BuyResult.BuyResultType.MAX_LEVEL_REACHED, 0, 0.0, "Already at max level");
+        }
+        
+        double cost = calculateLevelCost(skill, nextLevel);
+
+        if (user.getSkillCoins() < cost) {
+            return new BuyResult(BuyResult.BuyResultType.INSUFFICIENT_COINS, 0, cost, "Insufficient skill coins");
         }
 
-        double totalPrice = pricePerItem * amount;
-        user.setSkillCoins(user.getSkillCoins() + totalPrice);
+        user.setSkillCoins(user.getSkillCoins() - cost);
+        user.setSkillLevel(skill, nextLevel);
 
         if (debugMode) {
-            plugin.logger().info("User " + user.getUsername() + " sold " + amount + "x " + material + " for " + totalPrice + " skill points");
+            plugin.logger().info("User " + user.getUsername() + " purchased level for " + skill.getId().getKey() + " (cost: " + cost + ")");
         }
 
-        return new SellResult(true, amount, totalPrice, null);
+        return new BuyResult(BuyResult.BuyResultType.SUCCESS, 1, cost, null);
     }
 
     /**
@@ -232,6 +391,13 @@ public class SkillPointsShop {
     }
 
     /**
+     * Gets all buyable items
+     */
+    public Map<String, BuyableItem> getBuyableItems() {
+        return new HashMap<>(buyableItems);
+    }
+
+    /**
      * Gets all buyable abilities
      */
     public Map<String, BuyableAbility> getBuyableAbilities() {
@@ -246,10 +412,24 @@ public class SkillPointsShop {
     }
 
     /**
+     * Gets a buyable item
+     */
+    public BuyableItem getBuyableItem(String material) {
+        return buyableItems.get(material.toUpperCase());
+    }
+
+    /**
      * Checks if an item is sellable
      */
     public boolean isSellable(String material) {
         return sellableItems.containsKey(material.toUpperCase());
+    }
+
+    /**
+     * Checks if an item is buyable
+     */
+    public boolean isBuyable(String material) {
+        return buyableItems.containsKey(material.toUpperCase());
     }
 
     public boolean isDebugMode() {
@@ -279,6 +459,49 @@ public class SkillPointsShop {
         }
     }
 
+    public static class BuyResult {
+        public enum BuyResultType {
+            SUCCESS,
+            INSUFFICIENT_COINS,
+            OUT_OF_STOCK,
+            ITEM_NOT_FOUND,
+            MAX_LEVEL_REACHED,
+            ERROR
+        }
+
+        private final BuyResultType type;
+        private final int amount;
+        private final double totalCost;
+        private final String errorMessage;
+
+        public BuyResult(BuyResultType type, int amount, double totalCost, String errorMessage) {
+            this.type = type;
+            this.amount = amount;
+            this.totalCost = totalCost;
+            this.errorMessage = errorMessage;
+        }
+
+        public BuyResultType getType() {
+            return type;
+        }
+
+        public boolean isSuccess() {
+            return type == BuyResultType.SUCCESS;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public double getTotalCost() {
+            return totalCost;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
     public static class AbilityPurchaseResult {
         public final boolean success;
         public final String errorMessage;
@@ -286,6 +509,42 @@ public class SkillPointsShop {
         public AbilityPurchaseResult(boolean success, String errorMessage) {
             this.success = success;
             this.errorMessage = errorMessage;
+        }
+    }
+
+    public static class BuyableItem {
+        private final String material;
+        private final String displayName;
+        private final int amount;
+        private final double price;
+        private final int maxStock;
+
+        public BuyableItem(String material, String displayName, int amount, double price, int maxStock) {
+            this.material = material;
+            this.displayName = displayName;
+            this.amount = amount;
+            this.price = price;
+            this.maxStock = maxStock;
+        }
+
+        public String getMaterial() {
+            return material;
+        }
+
+        public String getDisplayName() {
+            return displayName;
+        }
+
+        public int getAmount() {
+            return amount;
+        }
+
+        public double getPrice() {
+            return price;
+        }
+
+        public int getMaxStock() {
+            return maxStock;
         }
     }
 

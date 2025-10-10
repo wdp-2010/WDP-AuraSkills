@@ -25,7 +25,27 @@ sql:
     max_lifetime: 1800000
     keepalive_time: 0
 default_language: en
-languages: [ en, es, fr, de, zh-CN, zh-TW, pt-BR, it, cs, pl, uk, ko, nl, ja, ru, id, vi, tr, fi, th ]
+languages:
+- en
+- es
+- fr
+- de
+- zh-CN
+- zh-TW
+- pt-BR
+- it
+- cs
+- pl
+- uk
+- ko
+- nl
+- ja
+- ru
+- id
+- vi
+- tr
+- fi
+- th
 try_detect_client_language: false
 hooks:
   HolographicDisplays:

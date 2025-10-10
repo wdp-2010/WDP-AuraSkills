@@ -20,7 +20,7 @@ items:
     material: barrier
     display_name: '<red><bold>Close'
   sell_items:
-    pos: 3,2
+    pos: 2,2
     material: emerald
     display_name: '<green><bold>Sell Rare Items'
     lore:
@@ -30,109 +30,36 @@ items:
     - '<dark_gray>Items available: <yellow>{sellable_count}'
     - ' '
     - '<yellow>Click to open'
+  buy_items:
+    pos: 2,4
+    material: diamond
+    display_name: '<aqua><bold>Buy Items'
+    lore:
+    - '<gray>Purchase items with'
+    - '<gray>your Skill Coins!'
+    - ' '
+    - '<dark_gray>Items available: <yellow>{buyable_count}'
+    - ' '
+    - '<yellow>Click to open'
+  buy_levels:
+    pos: 2,6
+    material: experience_bottle
+    display_name: '<gold><bold>Buy Skill Levels'
+    lore:
+    - '<gray>Purchase skill levels'
+    - '<gray>with your Skill Coins!'
+    - ' '
+    - '<dark_gray>Skills available: <yellow>{skill_count}'
+    - ' '
+    - '<yellow>Click to open'
   buy_abilities:
-    pos: 3,6
+    pos: 3,4
     material: enchanted_book
-    display_name: '<aqua><bold>Buy Custom Abilities'
+    display_name: '<light_purple><bold>Buy Custom Abilities'
     lore:
     - '<gray>Purchase special abilities'
-    - '<gray>that aren't earned naturally!'
+    - "<gray>that aren't earned naturally!"
     - ' '
     - '<dark_gray>Abilities available: <yellow>{ability_count}'
     - ' '
-    - '<yellow>Click to open'
-templates:
-  buy_level:
-    contexts:
-      archery:
-        group: levels
-        order: 1
-        pos: 1,0
-        material: bow
-      fighting:
-        group: levels
-        order: 2
-        pos: 1,1
-        material: iron_sword
-        flags:
-          - hide_attributes
-      defense:
-        group: levels
-        order: 3
-        pos: 1,2
-        material: chainmail_chestplate
-        flags: hide_attributes
-      endurance:
-        group: levels
-        order: 4
-        pos: 1,3
-        material: golden_apple
-      farming:
-        group: levels
-        order: 5
-        pos: 1,5
-        material: iron_hoe
-        flags:
-          - hide_attributes
-      foraging:
-        group: levels
-        order: 6
-        pos: 1,6
-        material: iron_axe
-        flags:
-          - hide_attributes
-      mining:
-        group: levels
-        order: 7
-        pos: 1,7
-        material: iron_pickaxe
-        flags:
-          - hide_attributes
-      fishing:
-        group: levels
-        order: 8
-        pos: 1,8
-        material: fishing_rod
-      excavation:
-        group: levels
-        order: 9
-        pos: 2,0
-        material: iron_shovel
-        flags:
-          - hide_attributes
-      agility:
-        group: levels
-        order: 10
-        pos: 2,1
-        material: sugar
-      alchemy:
-        group: levels
-        order: 11
-        pos: 2,2
-        material: brewing_stand
-      enchanting:
-        group: levels
-        order: 12
-        pos: 2,3
-        material: enchanting_table
-      sorcery:
-        group: levels
-        order: 13
-        pos: 2,5
-        material: blaze_powder
-      healing:
-        group: levels
-        order: 14
-        pos: 2,6
-        material: glistering_melon_slice
-      forging:
-        group: levels
-        order: 15
-        pos: 2,7
-        material: anvil
-    display_name: '<gold><bold>Buy {skill} Level'
-    lore:
-    - '<gray>Current Level: <green><bold>{current_level}'
-    - '<gray>Cost: <yellow>{cost} <gray>Skill Coins'
-    - ' '
-    - '<yellow>▸ Click to purchase 1 level'
+    - '<dark_gray>Coming in future update!'

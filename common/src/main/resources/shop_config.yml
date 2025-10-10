@@ -26,9 +26,26 @@ level_purchase:
 xp_purchase:
   enabled: false
 
+# Level Rewards (SkillCoins earned when leveling up)
+level_rewards:
+  enabled: true
+  # Base reward for level 1
+  base_reward: 50.0
+  # Exponential multiplier (reward = base * multiplier ^ (level / 10))
+  reward_multiplier: 1.2
+  # Show coins reward in level up messages
+  display_in_level_up: true
+  # Per-skill overrides (optional)
+  skill_rewards:
+    farming: 40.0
+    mining: 60.0
+    # Add more skills as needed
+
 # Item Selling System
 sell_items:
   enabled: true
+  # Global cooldown for all items (seconds) - prevents spam selling
+  global_cooldown: 300  # 5 minutes
   # List of sellable items with their prices (RARE ITEMS ONLY)
   items:
     # ═══════════════════════════════════════════════════════════════════════
@@ -37,6 +54,7 @@ sell_items:
     DRAGON_EGG:
       enabled: true
       price: 2000.0
+      cooldown: 3600  # 1 hour - very rare
       display_name: "<light_purple>Dragon Egg"
       lore:
         - "<gray>The rarest trophy in existence"
@@ -45,6 +63,7 @@ sell_items:
     DRAGON_HEAD:
       enabled: true
       price: 800.0
+      cooldown: 1800  # 30 minutes
       display_name: "<dark_purple>Dragon Head"
       lore:
         - "<gray>A fearsome decoration"
@@ -53,6 +72,7 @@ sell_items:
     NETHER_STAR:
       enabled: true
       price: 500.0
+      cooldown: 600  # 10 minutes
       display_name: "<white>Nether Star"
       lore:
         - "<gray>Dropped by the Wither boss"
@@ -293,6 +313,159 @@ sell_items:
       lore:
         - "<gray>Lucky rare drop"
         - "<yellow>Sells for: {price} coins"
+
+# Item Buying System (Shop Market)
+buy_items:
+  enabled: true
+  # Allow players to buy rare items with SkillCoins
+  # Buy prices are typically 2-3x higher than sell prices
+  items:
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 1: Legendary Items
+    # ═══════════════════════════════════════════════════════════════════════
+    DRAGON_EGG:
+      enabled: false  # Too rare to sell
+      price: 5000.0
+      stock: -1  # -1 = unlimited, >0 = limited stock per server restart
+      display_name: "<light_purple>Dragon Egg"
+      lore:
+        - "<gray>The rarest trophy in existence"
+        - "<yellow>Costs: {price} coins"
+    
+    NETHER_STAR:
+      enabled: true
+      price: 1500.0
+      stock: -1
+      display_name: "<white>Nether Star"
+      lore:
+        - "<gray>Used to craft beacons"
+        - "<yellow>Costs: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 2: Epic Items
+    # ═══════════════════════════════════════════════════════════════════════
+    ELYTRA:
+      enabled: true
+      price: 1200.0
+      stock: -1
+      display_name: "<gray>Elytra"
+      lore:
+        - "<gray>Rare End wings for flight"
+        - "<yellow>Costs: {price} coins"
+    
+    NETHERITE_INGOT:
+      enabled: true
+      price: 750.0
+      stock: -1
+      display_name: "<dark_red>Netherite Ingot"
+      lore:
+        - "<gray>The strongest material"
+        - "<yellow>Costs: {price} coins"
+    
+    TOTEM_OF_UNDYING:
+      enabled: true
+      price: 1000.0
+      stock: -1
+      display_name: "<gold>Totem of Undying"
+      lore:
+        - "<gray>Grants a second chance at life"
+        - "<yellow>Costs: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 3: Rare Items
+    # ═══════════════════════════════════════════════════════════════════════
+    ANCIENT_DEBRIS:
+      enabled: true
+      price: 500.0
+      stock: -1
+      display_name: "<dark_purple>Ancient Debris"
+      lore:
+        - "<gray>Rare nether ore"
+        - "<yellow>Costs: {price} coins"
+    
+    TRIDENT:
+      enabled: true
+      price: 450.0
+      stock: -1
+      display_name: "<aqua>Trident"
+      lore:
+        - "<gray>Rare drowned weapon"
+        - "<yellow>Costs: {price} coins"
+    
+    WITHER_SKELETON_SKULL:
+      enabled: true
+      price: 350.0
+      stock: -1
+      display_name: "<dark_gray>Wither Skeleton Skull"
+      lore:
+        - "<gray>Needed to summon the Wither"
+        - "<yellow>Costs: {price} coins"
+    
+    SPONGE:
+      enabled: true
+      price: 300.0
+      stock: -1
+      display_name: "<yellow>Sponge"
+      lore:
+        - "<gray>Found in ocean monuments"
+        - "<yellow>Costs: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 4: Valuable Items
+    # ═══════════════════════════════════════════════════════════════════════
+    EMERALD:
+      enabled: true
+      price: 200.0
+      stock: -1
+      display_name: "<green>Emerald"
+      lore:
+        - "<gray>Trading gem"
+        - "<yellow>Costs: {price} coins"
+    
+    DIAMOND:
+      enabled: true
+      price: 150.0
+      stock: -1
+      display_name: "<aqua>Diamond"
+      lore:
+        - "<gray>Precious gem"
+        - "<yellow>Costs: {price} coins"
+    
+    SHULKER_SHELL:
+      enabled: true
+      price: 250.0
+      stock: -1
+      display_name: "<purple>Shulker Shell"
+      lore:
+        - "<gray>Craft shulker boxes"
+        - "<yellow>Costs: {price} coins"
+    
+    GHAST_TEAR:
+      enabled: true
+      price: 180.0
+      stock: -1
+      display_name: "<white>Ghast Tear"
+      lore:
+        - "<gray>Rare nether drop"
+        - "<yellow>Costs: {price} coins"
+    
+    BLAZE_ROD:
+      enabled: true
+      price: 150.0
+      stock: -1
+      display_name: "<gold>Blaze Rod"
+      lore:
+        - "<gray>Essential nether resource"
+        - "<yellow>Costs: {price} coins"
+    
+    ENDER_PEARL:
+      enabled: true
+      price: 120.0
+      stock: -1
+      display_name: "<dark_purple>Ender Pearl"
+      lore:
+        - "<gray>Teleportation item"
+        - "<yellow>Costs: {price} coins"
 
 # Buyable Abilities System
 # These are SPECIAL abilities that must be purchased, separate from leveling

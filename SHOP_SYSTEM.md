@@ -1,22 +1,26 @@
 # Skill Coins Shop System
 
 ## Overview
+
 The Skill Coins Shop system allows players to purchase skill levels, XP, and stat resets using skill coins. This creates a balanced economy where players can progress through the skill system using earned currency.
 
 ## Features
 
 ### 1. **Buy Skill Levels**
+
 - Purchase individual skill levels for any enabled skill
 - Dynamic pricing that scales with current level
 - **Formula**: `Cost = 100 * (1.5 ^ (currentLevel / 10))`
 - Higher levels cost exponentially more to maintain balance
 
 ### 2. **Buy XP**
+
 - Purchase 100 XP for any skill
 - Fixed cost: 10 skill coins per 100 XP
 - Great for boosting skills close to leveling up
 
 ### 3. **Stat Reset**
+
 - Reset all skills to starting level (default 0)
 - Removes all XP from all skills
 - Fixed cost: 500 skill coins
@@ -25,6 +29,7 @@ The Skill Coins Shop system allows players to purchase skill levels, XP, and sta
 ## Commands
 
 ### `/shop`
+
 - **Permission**: `auraskills.command.shop`
 - **Description**: Opens the Skill Coins Shop menu
 - **Usage**: Simply type `/shop` to open the interactive menu

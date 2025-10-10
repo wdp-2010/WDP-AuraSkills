@@ -689,7 +689,17 @@ commands:
     insufficient_funds: "<red>You don't have enough SkillCoins for this purchase! <gray>(Balance: <gold>{balance}<gray>)"
     purchase_success: "<green>Successfully purchased {skill} level {level} for <gold>{cost} SkillCoins<green>!"
     purchase_failed: "<red>Purchase failed! Please try again."
-    sell_success: "<green>Sold {amount}x {item} for <gold>{total} SkillCoins<green>! <gray>(New balance: <gold>{balance}<gray>)"
+    sell_success: "<green>Sold {amount}x {item} for <gold>{price} SkillCoins<green>! <gray>(New balance: <gold>{balance}<gray>)"
+    sell_cooldown: "<red>You must wait {time} before selling {item} again!"
+    buy_success: "<green>Bought {amount}x {item} for <gold>{price} SkillCoins<green>! <gray>(New balance: <gold>{balance}<gray>)"
+    buy_out_of_stock: "<red>{item} is currently out of stock!"
+    buy_insufficient_coins: "<red>You don't have enough SkillCoins for {item}! <gray>(Need <gold>{price}<gray>, have <gold>{balance}<gray>)"
+    buy_item_not_found: "<red>Item {item} not found in the shop!"
+    buy_error: "<red>An error occurred while purchasing this item!"
+    level_success: "<green>Successfully purchased {skill} level {level} for <gold>{cost} SkillCoins<green>! <gray>(New balance: <gold>{balance}<gray>)"
+    level_insufficient_coins: "<red>You don't have enough SkillCoins for {skill} level {level}! <gray>(Need <gold>{cost}<gray>, have <gold>{balance}<gray>)"
+    level_max_level: "<red>{skill} is already at max level {level}!"
+    level_error: "<red>An error occurred while purchasing this level!"
     ability_purchase_success: "<green>Successfully unlocked {ability} ability for <gold>{cost} SkillCoins<green>!"
     ability_insufficient_level: "<red>You need {skill} level {level} to purchase this ability!"
   unknown_skill: "<yellow>Unknown skill!"
@@ -701,6 +711,7 @@ leveler:
   level_up: "{skill} Level Up"
   skill_level_up: Skill Level Up
   rewards: Rewards
+  coins_reward: "<gold>+{amount} SkillCoins"
   ability_unlock: Ability Unlock
   ability_level_up: Ability Level Up
   mana_ability_unlock: Mana Ability Unlock

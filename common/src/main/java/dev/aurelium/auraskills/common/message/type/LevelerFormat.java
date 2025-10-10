@@ -15,6 +15,7 @@ public enum LevelerFormat implements MessageKey {
     MANA_ABILITY_UNLOCK,
     MANA_ABILITY_LEVEL_UP,
     MONEY_REWARD,
+    COINS_REWARD,
     DESC_UPGRADE_VALUE,
     DESC_WRAP;
 

@@ -31,6 +31,7 @@ public class LevelUpMessenger {
     private final Skill skill;
     private final int level;
     private final List<SkillReward> rewards;
+    private double coinsReward = 0.0;
 
     public LevelUpMessenger(AuraSkillsPlugin plugin, User user, Locale locale, Skill skill, int level, List<SkillReward> rewards) {
         this.plugin = plugin;
@@ -39,6 +40,10 @@ public class LevelUpMessenger {
         this.skill = skill;
         this.level = level;
         this.rewards = rewards;
+    }
+
+    public void setCoinsReward(double coinsReward) {
+        this.coinsReward = coinsReward;
     }
 
     public void sendChatMessage() {
@@ -51,7 +56,8 @@ public class LevelUpMessenger {
                         "ability_level_up", getAbilityLevelUpMessage(),
                         "mana_ability_unlock", getManaAbilityUnlockMessage(),
                         "mana_ability_level_up", getManaAbilityLevelUpMessage(),
-                        "money_reward", getMoneyRewardMessage())
+                        "money_reward", getMoneyRewardMessage(),
+                        "coins_reward", getCoinsRewardMessage())
                 .toString();
         // Replace PlaceholderAPI placeholders
         if (plugin.getHookManager().isRegistered(PlaceholderHook.class)) {
@@ -201,6 +207,17 @@ public class LevelUpMessenger {
                     "amount", nf.format(totalMoney));
         }
         return builder.toString();
+    }
+
+    private String getCoinsRewardMessage() {
+        if (coinsReward > 0) {
+            MessageBuilder builder = MessageBuilder.create(plugin).locale(locale);
+            NumberFormat nf = new DecimalFormat("#");
+            builder.rawMessage(LevelerFormat.COINS_REWARD,
+                    "amount", nf.format(coinsReward));
+            return builder.toString();
+        }
+        return "";
     }
 
     private String descWrap(Locale locale) {

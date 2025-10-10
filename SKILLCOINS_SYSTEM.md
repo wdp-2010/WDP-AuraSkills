@@ -142,14 +142,72 @@ With Vault integration enabled, SkillCoins can be used by:
 - Permission plugins for rank purchases
 - Any plugin that supports Vault economy
 
+## Shop System
+
+A comprehensive shop GUI is now implemented with three main features:
+
+### 1. Sell Rare Items
+- Convert 36+ rare items into SkillCoins
+- Cooldown system prevents exploitation (configurable per-item)
+- Tiered pricing system (Legendary, Epic, Rare, Valuable, Special)
+- Items include: Dragon Egg, Nether Star, Elytra, Netherite, Trident, etc.
+
+### 2. Buy Skill Levels
+- Purchase levels for any skill using SkillCoins
+- Exponential cost scaling (configurable base + multiplier)
+- Per-skill cost overrides supported
+- Example: Level 0→1 = 100 coins, Level 100→101 = 138k coins
+
+### 3. Buy Items (Market)
+- Purchase rare items with SkillCoins
+- Buy prices typically 2-3x higher than sell prices
+- Optional stock limits (unlimited by default)
+- Same item categories as selling
+
+### 4. Buy Custom Abilities
+- Special abilities not earned through normal leveling
+- Skill level requirements enforced
+- Examples: Growth Aura (5000 coins, Farming 50), Revival (10000 coins, Healing 75)
+
+### Earning SkillCoins
+
+Players earn SkillCoins by:
+1. **Leveling Up Skills** - Configurable rewards per level (base reward × multiplier ^ (level/10))
+2. **Selling Rare Items** - Prices configured in shop_config.yml
+3. **Admin Commands** - `/sk coins add <player> <amount>`
+4. **Vault Integration** - Other plugins can give SkillCoins through Vault
+
+### Configuration
+
+See `common/src/main/resources/shop_config.yml` for:
+- Level purchase costs and per-skill overrides
+- Level reward amounts and scaling
+- Sellable items with prices and cooldowns
+- Buyable items with prices and stock limits
+- Buyable abilities with costs and requirements
+
+### Commands
+
+**Player Commands**:
+- `/shop` - Opens the shop menu
+- `/pay <player> <amount>` - Transfer SkillCoins
+
+**Admin Commands**:
+- `/shop debug` - Shows all shop configuration and prices
+- `/shop reload` - Reloads shop_config.yml
+- `/sk coins balance [player]` - Check balance
+- `/sk coins add/set/remove <player> <amount>` - Manage balances
+
+For complete shop system documentation, see `.github/SHOP_SYSTEM_DOCUMENTATION.md`
+
 ## Future Enhancements
 
 The system is designed to support future additions:
-- **Shop GUI**: Buy experience and items with SkillCoins
-- **Rewards**: Earn SkillCoins from leveling up skills
 - **Trading**: Enhanced player-to-player trading
 - **Banks**: Store coins securely
 - **Interest**: Passive coin generation
+- **Leaderboards**: Richest players, biggest spenders
+- **Transaction History**: Track all shop purchases and sales
 
 ## Technical Details
 

@@ -9,6 +9,7 @@ public enum LevelerMessage implements MessageKey {
     LEVEL_UP,
     SKILL_LEVEL_UP,
     REWARDS,
+    COINS_REWARD,
     ABILITY_UNLOCK,
     ABILITY_LEVEL_UP,
     MANA_ABILITY_UNLOCK,

@@ -77,7 +77,7 @@ leveler_format:
     <dark_aqua><strikethrough>----------------------------------------
     <reset> <dark_aqua>{{leveler.skill_level_up}} <aqua><bold>{skill}</bold> <dark_gray>{old}➜<dark_aqua><bold>{new}</bold>
     
-    <aqua> {{leveler.rewards}}:{stat_level}{ability_unlock}{ability_level_up}{mana_ability_unlock}{mana_ability_level_up}{money_reward}<reset>
+    <aqua> {{leveler.rewards}}:{stat_level}{ability_unlock}{ability_level_up}{mana_ability_unlock}{mana_ability_level_up}{money_reward}{coins_reward}<reset>
     <dark_aqua><strikethrough>----------------------------------------
   stat_level: "\n  {color}+{num}{symbol} {stat}"
   ability_unlock: "\n  <green>{{leveler.ability_unlock}} <gold><bold>{ability}</bold>\n      <white>{desc}"
@@ -85,6 +85,7 @@ leveler_format:
   mana_ability_unlock: "\n  <light_purple>{{leveler.mana_ability_unlock}} <blue><bold>{mana_ability}</bold>\n      <white>{desc}"
   mana_ability_level_up: "\n  <light_purple>{{leveler.mana_ability_level_up}} <blue><bold>{mana_ability}</bold> <dark_gray>{previous}→<gold>{level}\n      <white>{desc}"
   money_reward: "\n  <green>${amount}"
+  coins_reward: "\n  <gold>+{amount} SkillCoins"
   desc_upgrade_value: "<dark_gray>{current}→<white>{next}"
   desc_wrap: "<white>      "
 rewards:

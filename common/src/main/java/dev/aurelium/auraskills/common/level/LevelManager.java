@@ -4,6 +4,7 @@ import dev.aurelium.auraskills.api.ability.Ability;
 import dev.aurelium.auraskills.api.skill.Skill;
 import dev.aurelium.auraskills.api.source.XpSource;
 import dev.aurelium.auraskills.common.AuraSkillsPlugin;
+import dev.aurelium.auraskills.common.config.ConfigurateLoader;
 import dev.aurelium.auraskills.common.config.Option;
 import dev.aurelium.auraskills.common.hooks.EconomyHook;
 import dev.aurelium.auraskills.common.jobs.JobsBatchData;
@@ -170,6 +171,13 @@ public abstract class LevelManager {
 
         user.setSkillXp(skill, currentXp - xpRequirements.getXpRequired(skill, level));
         user.setSkillLevel(skill, level);
+        
+        // Give SkillCoins reward
+        double coinsReward = calculateSkillCoinsReward(skill, level);
+        if (coinsReward > 0) {
+            user.setSkillCoins(user.getSkillCoins() + coinsReward);
+        }
+        
         // Give custom rewards
         List<SkillReward> rewards = plugin.getRewardManager().getRewardTable(skill).getRewards(level);
         for (SkillReward reward : rewards) {
@@ -183,6 +191,7 @@ public abstract class LevelManager {
 
         // Sends messages
         LevelUpMessenger messenger = new LevelUpMessenger(plugin, user, locale, skill, level, rewards);
+        messenger.setCoinsReward(coinsReward); // Set coins reward for display
         if (plugin.configBoolean(Option.LEVELER_TITLE_ENABLED)) {
             messenger.sendTitle();
         }
@@ -193,6 +202,34 @@ public abstract class LevelManager {
 
         // Check for multiple level ups in a row after a delay
         plugin.getScheduler().scheduleSync(() -> checkLevelUp(user, skill), Tick.MS * plugin.configInt(Option.LEVELER_DOUBLE_CHECK_DELAY), TimeUnit.MILLISECONDS);
+    }
+
+    private double calculateSkillCoinsReward(Skill skill, int level) {
+        try {
+            ConfigurateLoader loader = new ConfigurateLoader(plugin, org.spongepowered.configurate.serialize.TypeSerializerCollection.builder().build());
+            org.spongepowered.configurate.ConfigurationNode config = loader.loadEmbeddedFile("shop_config.yml");
+            
+            org.spongepowered.configurate.ConfigurationNode rewardsConfig = config.node("level_rewards");
+            if (!rewardsConfig.node("enabled").getBoolean(true)) {
+                return 0.0;
+            }
+            
+            double baseReward = rewardsConfig.node("base_reward").getDouble(50.0);
+            double multiplier = rewardsConfig.node("reward_multiplier").getDouble(1.2);
+            
+            // Check for skill-specific override
+            String skillKey = skill.getId().getKey();
+            org.spongepowered.configurate.ConfigurationNode skillRewardsNode = rewardsConfig.node("skill_rewards", skillKey);
+            if (!skillRewardsNode.virtual()) {
+                baseReward = skillRewardsNode.getDouble(baseReward);
+            }
+            
+            // Calculate reward with exponential scaling
+            return baseReward * Math.pow(multiplier, level / 10.0);
+        } catch (Exception e) {
+            plugin.logger().warn("Failed to calculate SkillCoins reward: " + e.getMessage());
+            return 0.0;
+        }
     }
 
     public double calculateMultiplier(@NotNull User user, Skill skill) {
