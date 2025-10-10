@@ -1,34 +1,46 @@
-title: '<gold>Skill Coins Shop'
+title: '<gold><bold>Skill Coins Shop'
 size: 6
 fill:
   enabled: true
-  material: black_stained_glass_pane
+  material: gray_stained_glass_pane
 items:
   balance:
     pos: 0,4
     material: sunflower
-    display_name: '<gold>Your Balance'
+    display_name: '<gold><bold>Your Balance'
     lore:
-    - '<gray>Skill Coins: <yellow>{balance}'
+    - '<gray>Skill Coins: <yellow><bold>{balance}'
     - ' '
-    - '<gray>Use skill coins to purchase'
-    - '<gray>skill levels, XP, and more!'
+    - '<dark_gray>Use skill coins to:'
+    - '<dark_gray>• Sell rare items'
+    - '<dark_gray>• Buy skill levels'
+    - '<dark_gray>• Unlock abilities'
   close:
     pos: 5,8
     material: barrier
-    display_name: '<red>Close'
-  stat_reset:
-    pos: 5,4
-    material: nether_star
-    display_name: '<light_purple>Reset All Skills'
+    display_name: '<red><bold>Close'
+  sell_items:
+    pos: 3,2
+    material: emerald
+    display_name: '<green><bold>Sell Rare Items'
     lore:
-    - '<gray>Cost: <yellow>{cost} <gray>Skill Coins'
-    - '<gray>Balance: <yellow>{balance} <gray>Skill Coins'
+    - '<gray>Convert rare items into'
+    - '<gray>Skill Coins for upgrades!'
     - ' '
-    - '<red>This will reset all your skills'
-    - '<red>to level 0 and remove all XP!'
+    - '<dark_gray>Items available: <yellow>{sellable_count}'
     - ' '
-    - '<yellow>Click to purchase'
+    - '<yellow>Click to open'
+  buy_abilities:
+    pos: 3,6
+    material: enchanted_book
+    display_name: '<aqua><bold>Buy Custom Abilities'
+    lore:
+    - '<gray>Purchase special abilities'
+    - '<gray>that aren't earned naturally!'
+    - ' '
+    - '<dark_gray>Abilities available: <yellow>{ability_count}'
+    - ' '
+    - '<yellow>Click to open'
 templates:
   buy_level:
     contexts:
@@ -118,105 +130,9 @@ templates:
         order: 15
         pos: 2,7
         material: anvil
-    display_name: '<gold>Buy {skill} Level'
+    display_name: '<gold><bold>Buy {skill} Level'
     lore:
-    - '<gray>Current Level: <green>{current_level}'
+    - '<gray>Current Level: <green><bold>{current_level}'
     - '<gray>Cost: <yellow>{cost} <gray>Skill Coins'
-    - '<gray>Balance: <yellow>{balance} <gray>Skill Coins'
     - ' '
-    - '<yellow>Click to purchase 1 level'
-  buy_xp:
-    contexts:
-      archery:
-        group: xp
-        order: 1
-        pos: 3,0
-        material: arrow
-      fighting:
-        group: xp
-        order: 2
-        pos: 3,1
-        material: stone_sword
-        flags:
-          - hide_attributes
-      defense:
-        group: xp
-        order: 3
-        pos: 3,2
-        material: leather_chestplate
-        flags: hide_attributes
-      endurance:
-        group: xp
-        order: 4
-        pos: 3,3
-        material: apple
-      farming:
-        group: xp
-        order: 5
-        pos: 3,5
-        material: wooden_hoe
-        flags:
-          - hide_attributes
-      foraging:
-        group: xp
-        order: 6
-        pos: 3,6
-        material: wooden_axe
-        flags:
-          - hide_attributes
-      mining:
-        group: xp
-        order: 7
-        pos: 3,7
-        material: wooden_pickaxe
-        flags:
-          - hide_attributes
-      fishing:
-        group: xp
-        order: 8
-        pos: 3,8
-        material: tropical_fish
-      excavation:
-        group: xp
-        order: 9
-        pos: 4,0
-        material: wooden_shovel
-        flags:
-          - hide_attributes
-      agility:
-        group: xp
-        order: 10
-        pos: 4,1
-        material: feather
-      alchemy:
-        group: xp
-        order: 11
-        pos: 4,2
-        material: potion
-      enchanting:
-        group: xp
-        order: 12
-        pos: 4,3
-        material: book
-      sorcery:
-        group: xp
-        order: 13
-        pos: 4,5
-        material: fire_charge
-      healing:
-        group: xp
-        order: 14
-        pos: 4,6
-        material: golden_apple
-      forging:
-        group: xp
-        order: 15
-        pos: 4,7
-        material: iron_block
-    display_name: '<aqua>Buy {skill} XP'
-    lore:
-    - '<gray>XP Amount: <green>{xp_amount}'
-    - '<gray>Cost: <yellow>{cost} <gray>Skill Coins'
-    - '<gray>Balance: <yellow>{balance} <gray>Skill Coins'
-    - ' '
-    - '<yellow>Click to purchase {xp_amount} XP'
+    - '<yellow>▸ Click to purchase 1 level'

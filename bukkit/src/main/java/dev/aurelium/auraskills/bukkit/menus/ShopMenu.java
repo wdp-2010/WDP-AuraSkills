@@ -8,9 +8,7 @@ import dev.aurelium.auraskills.common.economy.SkillPointsShop;
 import dev.aurelium.auraskills.common.message.type.CommandMessage;
 import dev.aurelium.auraskills.common.user.User;
 import dev.aurelium.slate.builder.MenuBuilder;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashSet;
 import java.util.Locale;
@@ -34,7 +32,7 @@ public class ShopMenu {
         menu.item("close", globalItems::close);
         menu.fillItem(globalItems::fill);
 
-        // Shop header item showing balance
+        // Balance display
         menu.item("balance", item -> {
             item.replace("balance", p -> {
                 User user = plugin.getUser(p.player());
@@ -42,7 +40,7 @@ public class ShopMenu {
             });
         });
 
-        // Buy skill level template
+        // Buy skill levels
         menu.template("buy_level", Skill.class, template -> {
             template.replace("skill", t -> t.value().getDisplayName(t.locale()));
             template.replace("current_level", t -> {
@@ -52,11 +50,7 @@ public class ShopMenu {
             template.replace("cost", t -> {
                 User user = plugin.getUser(t.player());
                 int currentLevel = user.getSkillLevel(t.value());
-                return String.format("%.2f", shop.calculateLevelCost(currentLevel));
-            });
-            template.replace("balance", t -> {
-                User user = plugin.getUser(t.player());
-                return String.format("%.2f", user.getSkillCoins());
+                return String.format("%.2f", shop.calculateLevelCost(t.value(), currentLevel));
             });
 
             template.onClick(c -> {
@@ -65,10 +59,9 @@ public class ShopMenu {
                 Locale locale = plugin.getLocale(player);
 
                 int currentLevel = user.getSkillLevel(c.value());
-                double cost = shop.calculateLevelCost(currentLevel);
-                double balance = user.getSkillCoins();
+                double cost = shop.calculateLevelCost(c.value(), currentLevel);
 
-                if (balance < cost) {
+                if (user.getSkillCoins() < cost) {
                     player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
                             CommandMessage.SHOP_INSUFFICIENT_FUNDS, locale));
                     return;
@@ -82,8 +75,6 @@ public class ShopMenu {
                             "{cost}", String.format("%.2f", cost)
                     );
                     player.sendMessage(plugin.getPrefix(locale) + message);
-
-                    // Reopen menu to refresh
                     plugin.getSlate().openMenu(player, "shop");
                 } else {
                     player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
@@ -94,83 +85,21 @@ public class ShopMenu {
             template.definedContexts(m -> new HashSet<>(plugin.getSkillManager().getEnabledSkills()));
         });
 
-        // Buy 100 XP item
-        menu.template("buy_xp", Skill.class, template -> {
-            template.replace("skill", t -> t.value().getDisplayName(t.locale()));
-            template.replace("xp_amount", t -> "100");
-            template.replace("cost", t -> String.format("%.2f", shop.calculateXpCost(100)));
-            template.replace("balance", t -> {
-                User user = plugin.getUser(t.player());
-                return String.format("%.2f", user.getSkillCoins());
-            });
-
-            template.onClick(c -> {
-                User user = plugin.getUser(c.player());
-                Player player = c.player();
-                Locale locale = plugin.getLocale(player);
-
-                double xpAmount = 100;
-                double cost = shop.calculateXpCost(xpAmount);
-                double balance = user.getSkillCoins();
-
-                if (balance < cost) {
-                    player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
-                            CommandMessage.SHOP_INSUFFICIENT_FUNDS, locale));
-                    return;
-                }
-
-                if (shop.purchaseXp(user, c.value(), xpAmount)) {
-                    String message = TextUtil.replace(
-                            plugin.getMsg(CommandMessage.SHOP_XP_PURCHASE_SUCCESS, locale),
-                            "{skill}", c.value().getDisplayName(locale),
-                            "{xp_amount}", String.valueOf((int) xpAmount),
-                            "{cost}", String.format("%.2f", cost)
-                    );
-                    player.sendMessage(plugin.getPrefix(locale) + message);
-
-                    // Reopen menu to refresh
-                    plugin.getSlate().openMenu(player, "shop");
-                } else {
-                    player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
-                            CommandMessage.SHOP_PURCHASE_FAILED, locale));
-                }
-            });
-
-            template.definedContexts(m -> new HashSet<>(plugin.getSkillManager().getEnabledSkills()));
-        });
-
-        // Stat reset item
-        menu.item("stat_reset", item -> {
-            item.replace("cost", p -> String.format("%.2f", shop.getStatResetCost()));
-            item.replace("balance", p -> {
-                User user = plugin.getUser(p.player());
-                return String.format("%.2f", user.getSkillCoins());
-            });
-
+        // Sell items button - will be implemented with submenu later
+        menu.item("sell_items", item -> {
+            item.replace("sellable_count", p -> String.valueOf(shop.getSellableItems().size()));
             item.onClick(c -> {
-                User user = plugin.getUser(c.player());
-                Player player = c.player();
-                Locale locale = plugin.getLocale(player);
+                // TODO: Open sell items submenu when implemented
+                c.player().sendMessage(plugin.getPrefix(plugin.getLocale(c.player())) + "§cSell items feature coming soon!");
+            });
+        });
 
-                double cost = shop.getStatResetCost();
-                double balance = user.getSkillCoins();
-
-                if (balance < cost) {
-                    player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
-                            CommandMessage.SHOP_INSUFFICIENT_FUNDS, locale));
-                    return;
-                }
-
-                if (shop.purchaseStatReset(user)) {
-                    player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
-                            CommandMessage.SHOP_STAT_RESET_SUCCESS, locale));
-
-                    // Reopen menu to refresh
-                    plugin.getSlate().openMenu(player, "shop");
-                } else {
-                    player.sendMessage(plugin.getPrefix(locale) + plugin.getMsg(
-                            CommandMessage.SHOP_PURCHASE_FAILED, locale));
-                }
+        // Buy abilities button - will be implemented with submenu later
+        menu.item("buy_abilities", item -> {
+            item.replace("ability_count", p -> String.valueOf(shop.getBuyableAbilities().size()));
+            item.onClick(c -> {
+                // TODO: Open buy abilities submenu when implemented
+                c.player().sendMessage(plugin.getPrefix(plugin.getLocale(c.player())) + "§cBuy abilities feature coming soon!");
             });
         });
     }

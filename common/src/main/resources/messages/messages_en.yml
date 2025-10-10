@@ -686,11 +686,12 @@ commands:
     remove:
       removed: "<gray>Removed <gold>{amount} SkillCoins <gray>from <aqua>{player}<gray>. New balance: <gold>{balance}"
   shop:
-    insufficient_funds: "<red>You don't have enough SkillCoins for this purchase!"
+    insufficient_funds: "<red>You don't have enough SkillCoins for this purchase! <gray>(Balance: <gold>{balance}<gray>)"
     purchase_success: "<green>Successfully purchased {skill} level {level} for <gold>{cost} SkillCoins<green>!"
-    xp_purchase_success: "<green>Successfully purchased {xp_amount} XP for {skill} for <gold>{cost} SkillCoins<green>!"
     purchase_failed: "<red>Purchase failed! Please try again."
-    stat_reset_success: "<green>Successfully reset all skills! Your skill coins have been refunded."
+    sell_success: "<green>Sold {amount}x {item} for <gold>{total} SkillCoins<green>! <gray>(New balance: <gold>{balance}<gray>)"
+    ability_purchase_success: "<green>Successfully unlocked {ability} ability for <gold>{cost} SkillCoins<green>!"
+    ability_insufficient_level: "<red>You need {skill} level {level} to purchase this ability!"
   unknown_skill: "<yellow>Unknown skill!"
   unknown_mana_ability: "<yellow>Unknown mana ability!"
   unknown_stat: "<yellow>Unknown stat!"

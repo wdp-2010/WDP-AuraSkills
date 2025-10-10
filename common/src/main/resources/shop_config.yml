@@ -29,88 +29,269 @@ xp_purchase:
 # Item Selling System
 sell_items:
   enabled: true
-  # List of sellable items with their prices
+  # List of sellable items with their prices (RARE ITEMS ONLY)
   items:
-    # Rare Ores
-    DIAMOND:
-      price: 50.0
-      display_name: "<aqua>Diamond"
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 1: Legendary Items (500-2000 coins)
+    # ═══════════════════════════════════════════════════════════════════════
+    DRAGON_EGG:
+      enabled: true
+      price: 2000.0
+      display_name: "<light_purple>Dragon Egg"
       lore:
-        - "<gray>A rare and valuable gem"
+        - "<gray>The rarest trophy in existence"
         - "<yellow>Sells for: {price} coins"
-    EMERALD:
-      price: 75.0
-      display_name: "<green>Emerald"
+    
+    DRAGON_HEAD:
+      enabled: true
+      price: 800.0
+      display_name: "<dark_purple>Dragon Head"
       lore:
-        - "<gray>A precious trading gem"
+        - "<gray>A fearsome decoration"
         - "<yellow>Sells for: {price} coins"
+    
+    NETHER_STAR:
+      enabled: true
+      price: 500.0
+      display_name: "<white>Nether Star"
+      lore:
+        - "<gray>Dropped by the Wither boss"
+        - "<yellow>Sells for: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 2: Epic Items (200-500 coins)
+    # ═══════════════════════════════════════════════════════════════════════
+    ELYTRA:
+      enabled: true
+      price: 400.0
+      display_name: "<gray>Elytra"
+      lore:
+        - "<gray>Rare End wings for flight"
+        - "<yellow>Sells for: {price} coins"
+    
     NETHERITE_INGOT:
-      price: 200.0
+      enabled: true
+      price: 250.0
       display_name: "<dark_red>Netherite Ingot"
       lore:
         - "<gray>The strongest material"
         - "<yellow>Sells for: {price} coins"
+    
+    BEACON:
+      enabled: true
+      price: 300.0
+      display_name: "<white>Beacon"
+      lore:
+        - "<gray>Grants powerful buffs"
+        - "<yellow>Sells for: {price} coins"
+    
+    TOTEM_OF_UNDYING:
+      enabled: true
+      price: 350.0
+      display_name: "<gold>Totem of Undying"
+      lore:
+        - "<gray>Grants a second chance at life"
+        - "<yellow>Sells for: {price} coins"
+    
+    HEART_OF_THE_SEA:
+      enabled: true
+      price: 200.0
+      display_name: "<aqua>Heart of the Sea"
+      lore:
+        - "<gray>Powers the conduit"
+        - "<yellow>Sells for: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 3: Rare Items (100-200 coins)
+    # ═══════════════════════════════════════════════════════════════════════
     ANCIENT_DEBRIS:
-      price: 150.0
+      enabled: true
+      price: 180.0
       display_name: "<dark_purple>Ancient Debris"
       lore:
-        - "<gray>Rare nether material"
+        - "<gray>Rare nether ore"
         - "<yellow>Sells for: {price} coins"
     
-    # Rare Items
-    NETHER_STAR:
-      price: 500.0
-      display_name: "<white>Nether Star"
-      lore:
-        - "<gray>Dropped by the Wither"
-        - "<yellow>Sells for: {price} coins"
-    DRAGON_EGG:
-      price: 1000.0
-      display_name: "<light_purple>Dragon Egg"
-      lore:
-        - "<gray>The rarest trophy"
-        - "<yellow>Sells for: {price} coins"
-    ELYTRA:
-      price: 300.0
-      display_name: "<gray>Elytra"
-      lore:
-        - "<gray>Wings of flight"
-        - "<yellow>Sells for: {price} coins"
-    
-    # Enchanted Books (examples)
-    ENCHANTED_BOOK:
-      price: 25.0
-      display_name: "<purple>Enchanted Book"
-      lore:
-        - "<gray>Contains valuable enchantments"
-        - "<yellow>Sells for: {price} coins"
-    
-    # Rare Mob Drops
-    WITHER_SKELETON_SKULL:
-      price: 100.0
-      display_name: "<dark_gray>Wither Skeleton Skull"
-      lore:
-        - "<gray>A dark trophy"
-        - "<yellow>Sells for: {price} coins"
     TRIDENT:
+      enabled: true
       price: 150.0
       display_name: "<aqua>Trident"
       lore:
-        - "<gray>A powerful aquatic weapon"
+        - "<gray>Rare drowned weapon"
         - "<yellow>Sells for: {price} coins"
     
-    # Valuable Blocks
-    BEACON:
-      price: 250.0
-      display_name: "<white>Beacon"
+    WITHER_SKELETON_SKULL:
+      enabled: true
+      price: 120.0
+      display_name: "<dark_gray>Wither Skeleton Skull"
       lore:
-        - "<gray>A light in the darkness"
+        - "<gray>Needed to summon the Wither"
         - "<yellow>Sells for: {price} coins"
-    SHULKER_BOX:
+    
+    SKELETON_SKULL:
+      enabled: true
+      price: 40.0
+      display_name: "<white>Skeleton Skull"
+      lore:
+        - "<gray>Rare mob drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    ZOMBIE_HEAD:
+      enabled: true
+      price: 40.0
+      display_name: "<green>Zombie Head"
+      lore:
+        - "<gray>Rare mob drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    CREEPER_HEAD:
+      enabled: true
+      price: 40.0
+      display_name: "<green>Creeper Head"
+      lore:
+        - "<gray>Rare mob drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    SPONGE:
+      enabled: true
+      price: 100.0
+      display_name: "<yellow>Sponge"
+      lore:
+        - "<gray>Found in ocean monuments"
+        - "<yellow>Sells for: {price} coins"
+    
+    NAUTILUS_SHELL:
+      enabled: true
+      price: 120.0
+      display_name: "<blue>Nautilus Shell"
+      lore:
+        - "<gray>Rare ocean treasure"
+        - "<yellow>Sells for: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 4: Valuable Items (50-100 coins)
+    # ═══════════════════════════════════════════════════════════════════════
+    EMERALD:
+      enabled: true
       price: 80.0
+      display_name: "<green>Emerald"
+      lore:
+        - "<gray>Rare trading gem"
+        - "<yellow>Sells for: {price} coins"
+    
+    DIAMOND:
+      enabled: true
+      price: 60.0
+      display_name: "<aqua>Diamond"
+      lore:
+        - "<gray>Precious gem"
+        - "<yellow>Sells for: {price} coins"
+    
+    SHULKER_SHELL:
+      enabled: true
+      price: 90.0
+      display_name: "<purple>Shulker Shell"
+      lore:
+        - "<gray>Dropped by shulkers in the End"
+        - "<yellow>Sells for: {price} coins"
+    
+    SHULKER_BOX:
+      enabled: true
+      price: 100.0
       display_name: "<purple>Shulker Box"
       lore:
-        - "<gray>Portable storage"
+        - "<gray>Portable storage solution"
+        - "<yellow>Sells for: {price} coins"
+    
+    GHAST_TEAR:
+      enabled: true
+      price: 70.0
+      display_name: "<white>Ghast Tear"
+      lore:
+        - "<gray>Rare nether drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    ENDER_PEARL:
+      enabled: true
+      price: 50.0
+      display_name: "<dark_purple>Ender Pearl"
+      lore:
+        - "<gray>Teleportation item"
+        - "<yellow>Sells for: {price} coins"
+    
+    BLAZE_ROD:
+      enabled: true
+      price: 60.0
+      display_name: "<gold>Blaze Rod"
+      lore:
+        - "<gray>Essential nether resource"
+        - "<yellow>Sells for: {price} coins"
+    
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 5: Special Items (25-50 coins)
+    # ═══════════════════════════════════════════════════════════════════════
+    ENCHANTED_GOLDEN_APPLE:
+      enabled: true
+      price: 150.0
+      display_name: "<gold>Enchanted Golden Apple"
+      lore:
+        - "<gray>Extremely rare god apple"
+        - "<yellow>Sells for: {price} coins"
+    
+    MUSIC_DISC_5:
+      enabled: true
+      price: 100.0
+      display_name: "<aqua>Music Disc (5)"
+      lore:
+        - "<gray>Rare ancient city disc"
+        - "<yellow>Sells for: {price} coins"
+    
+    MUSIC_DISC_PIGSTEP:
+      enabled: true
+      price: 80.0
+      display_name: "<red>Music Disc (Pigstep)"
+      lore:
+        - "<gray>Rare bastion disc"
+        - "<yellow>Sells for: {price} coins"
+    
+    ECHO_SHARD:
+      enabled: true
+      price: 90.0
+      display_name: "<dark_aqua>Echo Shard"
+      lore:
+        - "<gray>Found in ancient cities"
+        - "<yellow>Sells for: {price} coins"
+    
+    NETHERITE_SCRAP:
+      enabled: true
+      price: 65.0
+      display_name: "<dark_red>Netherite Scrap"
+      lore:
+        - "<gray>Refined from ancient debris"
+        - "<yellow>Sells for: {price} coins"
+    
+    PRISMARINE_CRYSTALS:
+      enabled: true
+      price: 40.0
+      display_name: "<aqua>Prismarine Crystals"
+      lore:
+        - "<gray>Guardian drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    PRISMARINE_SHARD:
+      enabled: true
+      price: 30.0
+      display_name: "<blue>Prismarine Shard"
+      lore:
+        - "<gray>Guardian drop"
+        - "<yellow>Sells for: {price} coins"
+    
+    RABBIT_FOOT:
+      enabled: true
+      price: 45.0
+      display_name: "<white>Rabbit's Foot"
+      lore:
+        - "<gray>Lucky rare drop"
         - "<yellow>Sells for: {price} coins"
 
 # Buyable Abilities System
