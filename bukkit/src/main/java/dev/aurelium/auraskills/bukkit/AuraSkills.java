@@ -18,6 +18,7 @@ import dev.aurelium.auraskills.bukkit.api.implementation.BukkitApiProvider;
 import dev.aurelium.auraskills.bukkit.commands.CommandRegistrar;
 import dev.aurelium.auraskills.bukkit.commands.ConfirmManager;
 import dev.aurelium.auraskills.bukkit.config.BukkitConfigProvider;
+import dev.aurelium.auraskills.bukkit.economy.ShopManager;
 import dev.aurelium.auraskills.bukkit.event.BukkitEventHandler;
 import dev.aurelium.auraskills.bukkit.hooks.WorldGuardFlags;
 import dev.aurelium.auraskills.bukkit.item.*;
@@ -35,6 +36,7 @@ import dev.aurelium.auraskills.bukkit.loot.handler.BlockLootHandler;
 import dev.aurelium.auraskills.bukkit.loot.handler.FishingLootHandler;
 import dev.aurelium.auraskills.bukkit.loot.handler.MobLootHandler;
 import dev.aurelium.auraskills.bukkit.mana.BukkitManaAbilityManager;
+import dev.aurelium.auraskills.bukkit.menus.MainShopMenu;
 import dev.aurelium.auraskills.bukkit.menus.MenuFileManager;
 import dev.aurelium.auraskills.bukkit.menus.MenuOptions;
 import dev.aurelium.auraskills.bukkit.menus.MenuRegistrar;
@@ -166,6 +168,8 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
     private ItemManager itemManager;
     private ConfirmManager confirmManager;
     private PresetManager presetManager;
+    private ShopManager shopManager;
+    private MainShopMenu mainShopMenu;
     private PlatformUtil platformUtil;
     private BukkitAntiAfkManager antiAfkManager;
     private SkillCoinsManager skillCoinsManager;
@@ -288,6 +292,10 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
             abilityManager.registerAbilityImplementations();
             manaAbilityManager.registerProviders();
             registerEvents();
+            // Initialize shop system
+            shopManager = new ShopManager(this);
+            shopManager.initialize();
+            mainShopMenu = new MainShopMenu(this);
             registerAndLoadMenus();
             // Call SkillsLoadEvent
             SkillsLoadEvent event = new SkillsLoadEvent(skillManager.getSkillValues());
@@ -387,6 +395,7 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
         loader.generateUserFile("abilities.yml");
         loader.generateUserFile("mana_abilities.yml");
         loader.generateUserFile("xp_requirements.yml");
+        loader.generateUserFile("shop_config.yml");
         for (Skill skill : Skills.values()) {
             String sources = "sources/" + skill.name().toLowerCase(Locale.ROOT) + ".yml";
             loader.generateUserFile(sources);
@@ -523,6 +532,14 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
 
     public SkillCoinsManager getSkillCoinsManager() {
         return skillCoinsManager;
+    }
+
+    public ShopManager getShopManager() {
+        return shopManager;
+    }
+
+    public MainShopMenu getMainShopMenu() {
+        return mainShopMenu;
     }
 
     public AuraSkillsBukkit getApiBukkit() {

@@ -1,0 +1,87 @@
+title: '<aqua><bold>Item Market'
+size: 6
+fill:
+  enabled: true
+  material: gray_stained_glass_pane
+items:
+  balance:
+    pos: 0,4
+    material: sunflower
+    display_name: '<gold><bold>Your Balance'
+    lore:
+    - '<gray>Skill Coins: <yellow><bold>{balance}'
+    - ' '
+    - '<green><bold>How to use:'
+    - '<green>• Left Click = Sell items'
+    - '<green>• Right Click = Buy items'
+    - '<green>• Amount selector will open'
+  back:
+    pos: 5,0
+    material: arrow
+    display_name: '<yellow><bold>← Back to Shop'
+  close:
+    pos: 5,8
+    material: barrier
+    display_name: '<red><bold>Close'
+  instructions:
+    pos: 0,0
+    material: book
+    display_name: '<yellow><bold>Instructions'
+    lore:
+    - '<gray>Welcome to the Item Market!'
+    - ' '
+    - '<green><bold>Selling:'
+    - '<green>• Left-click any item to sell'
+    - '<green>• Choose amount in submenu'
+    - '<green>• Cooldowns prevent spam'
+    - ' '
+    - '<aqua><bold>Buying:'
+    - '<aqua>• Right-click any item to buy'
+    - '<aqua>• Choose amount in submenu'
+    - '<aqua>• Limited stock on some items'
+    - ' '
+    - '<yellow>Tip: Hold items in inventory to sell!'
+templates:
+  item:
+    options:
+      slots:
+      - 1,1
+      - 1,2
+      - 1,3
+      - 1,4
+      - 1,5
+      - 1,6
+      - 1,7
+      - 2,1
+      - 2,2
+      - 2,3
+      - 2,4
+      - 2,5
+      - 2,6
+      - 2,7
+      - 3,1
+      - 3,2
+      - 3,3
+      - 3,4
+      - 3,5
+      - 3,6
+      - 3,7
+      - 4,1
+      - 4,2
+      - 4,3
+      - 4,4
+      - 4,5
+      - 4,6
+      - 4,7
+    material: dirt
+    display_name: '<white><bold>{formatted_name}'
+    lore:
+    - '<gray>▸ Item: <white>{formatted_name}'
+    - '<gray>▸ Sell Price: <green>{sell_price} coins'
+    - '<gray>▸ Buy Price: <aqua>{buy_price} coins'
+    - '<gray>▸ You have: <yellow>{player_count}'
+    - ' '
+    - '<green><bold>Left Click</bold> <gray>to <green>SELL'
+    - '<aqua><bold>Right Click</bold> <gray>to <aqua>BUY'
+    - ' '
+    - '{cooldown_info}'

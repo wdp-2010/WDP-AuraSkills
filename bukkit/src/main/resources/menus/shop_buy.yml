@@ -3,40 +3,29 @@ size: 6
 fill:
   enabled: true
   material: black_stained_glass_pane
-
 items:
   close:
     pos: 5,8
     material: barrier
     display_name: '<red><bold>Close'
-    
   back:
-    pos: 5,0
+    pos: 5,4
     material: arrow
-    display_name: '<green>← Back to Shop'
-    lore:
-      - '<gray>Return to main shop menu'
-      
+    display_name: '<yellow><bold>Back to Shop'
   balance:
     pos: 0,4
     material: sunflower
     display_name: '<gold><bold>Your Balance'
     lore:
-      - '<gray>Skill Coins: <yellow><bold>{skill_coins}'
-      - ' '
-      - '<gray>Purchase items with your'
-      - '<gray>earned Skill Coins!'
-
+    - '<gray>Skill Coins: <yellow><bold>{balance}'
 templates:
   item:
-    material: diamond
-    display_name: '<white>{display_name}'
+    material: emerald
+    display_name: '<aqua><bold>{formatted_name}'
     lore:
-      - '<gray>Price: <yellow>{price} Skill Coins'
-      - '<gray>Amount: <white>{amount}'
-      - '<gray>Stock: <yellow>{stock}'
-      - ' '
-      - '{afford_lore}'
-      - '{stock_lore}'
-      - ' '
-      - '{click_lore}'
+    - '<gray>Price: <yellow>{price} Skill Coins'
+    - '<gray>Amount: <white>{amount}'
+    - '<gray>Stock: <yellow>{stock}'
+    - ' '
+    - '{afford_lore}'
+    - '<aqua>Click to purchase!'

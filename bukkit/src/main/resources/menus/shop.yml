@@ -12,54 +12,39 @@ items:
     - '<gray>Skill Coins: <yellow><bold>{balance}'
     - ' '
     - '<dark_gray>Use skill coins to:'
-    - '<dark_gray>• Sell rare items'
-    - '<dark_gray>• Buy skill levels'
-    - '<dark_gray>• Unlock abilities'
+    - '<dark_gray>• Buy and sell items'
+    - '<dark_gray>• Unlock special abilities'
   close:
     pos: 5,8
     material: barrier
     display_name: '<red><bold>Close'
-  sell_items:
-    pos: 2,2
-    material: emerald
-    display_name: '<green><bold>Sell Rare Items'
+  item_market:
+    pos: 2,3
+    material: chest
+    display_name: '<aqua><bold>Item Market'
     lore:
-    - '<gray>Convert rare items into'
-    - '<gray>Skill Coins for upgrades!'
+    - '<gray>Buy and sell valuable items!'
+    - '<gray>Left-click to sell, right-click to buy'
     - ' '
-    - '<dark_gray>Items available: <yellow>{sellable_count}'
+    - '<green>✓ Interactive amount selector'
+    - '<green>✓ Real-time cooldown tracking'
+    - '<green>✓ Stock information'
     - ' '
-    - '<yellow>Click to open'
-  buy_items:
-    pos: 2,4
-    material: diamond
-    display_name: '<aqua><bold>Buy Items'
-    lore:
-    - '<gray>Purchase items with'
-    - '<gray>your Skill Coins!'
+    - '<dark_gray>Items available: <yellow>{total_items}'
     - ' '
-    - '<dark_gray>Items available: <yellow>{buyable_count}'
-    - ' '
-    - '<yellow>Click to open'
-  buy_levels:
-    pos: 2,6
-    material: experience_bottle
-    display_name: '<gold><bold>Buy Skill Levels'
-    lore:
-    - '<gray>Purchase skill levels'
-    - '<gray>with your Skill Coins!'
-    - ' '
-    - '<dark_gray>Skills available: <yellow>{skill_count}'
-    - ' '
-    - '<yellow>Click to open'
+    - '<yellow>Click to browse items!'
   buy_abilities:
-    pos: 3,4
+    pos: 2,5
     material: enchanted_book
-    display_name: '<light_purple><bold>Buy Custom Abilities'
+    display_name: '<light_purple><bold>Special Abilities'
     lore:
-    - '<gray>Purchase special abilities'
+    - '<gray>Purchase unique abilities'
     - "<gray>that aren't earned naturally!"
+    - ' '
+    - '<green>✓ Powerful combat skills'
+    - '<green>✓ Rare utility abilities'
+    - '<green>✓ Exclusive enhancements'
     - ' '
     - '<dark_gray>Abilities available: <yellow>{ability_count}'
     - ' '
-    - '<yellow>Click to open'
+    - '<yellow>Click to browse abilities!'

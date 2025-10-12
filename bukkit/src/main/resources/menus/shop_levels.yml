@@ -3,38 +3,29 @@ size: 6
 fill:
   enabled: true
   material: black_stained_glass_pane
-
 items:
   close:
     pos: 5,8
     material: barrier
     display_name: '<red><bold>Close'
-    
   back:
-    pos: 5,0
+    pos: 5,4
     material: arrow
-    display_name: '<green>← Back to Shop'
-    lore:
-      - '<gray>Return to main shop menu'
-      
+    display_name: '<yellow><bold>Back to Shop'
   balance:
     pos: 0,4
     material: sunflower
     display_name: '<gold><bold>Your Balance'
     lore:
-      - '<gray>Skill Coins: <yellow><bold>{skill_coins}'
-      - ' '
-      - '<gray>Purchase skill levels!'
-
+    - '<gray>Skill Coins: <yellow><bold>{balance}'
 templates:
   skill:
     material: book
-    display_name: '<white>{skill_name}'
+    display_name: '<blue><bold>{skill_name}'
     lore:
-      - '<gray>Current Level: <white>{current_level}'
-      - '<gray>Next Level: <yellow>{next_level}'
-      - '<gray>Cost: <yellow>{cost} Skill Coins'
-      - ' '
-      - '{afford_lore}'
-      - ' '
-      - '{click_lore}'
+    - '<gray>Current Level: <white>{current_level}'
+    - '<gray>Next Level: <yellow>{next_level}'
+    - '<gray>Cost: <yellow>{cost} Skill Coins'
+    - ' '
+    - '{afford_lore}'
+    - '<blue>Click to buy level!'

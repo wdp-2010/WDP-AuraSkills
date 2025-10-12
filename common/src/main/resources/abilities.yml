@@ -28,7 +28,7 @@ abilities:
     level_up: 5
     max_level: 0
   auraskills/growth_aura:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 12.0
     value_per_level: 12.0
     unlock: '{start}+5'
@@ -99,7 +99,7 @@ abilities:
     level_up: 5
     max_level: 0
   auraskills/hardened_armor:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 3.0
     value_per_level: 3.0
     unlock: '{start}+5'
@@ -135,7 +135,7 @@ abilities:
     level_up: 5
     max_level: 0
   auraskills/epic_catch:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 0.2
     value_per_level: 0.2
     unlock: '{start}+5'
@@ -172,7 +172,7 @@ abilities:
     max_level: 0
     scale_base_value_chance: false
   auraskills/lucky_spades:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 0.05
     value_per_level: 0.03
     unlock: '{start}+5'
@@ -209,7 +209,7 @@ abilities:
     level_up: 5
     max_level: 0
   auraskills/stun:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 2.0
     value_per_level: 1.0
     unlock: '{start}+5'
@@ -245,7 +245,7 @@ abilities:
     level_up: 5
     max_level: 0
   auraskills/no_debuff:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 5.0
     value_per_level: 5.0
     unlock: '{start}+5'
@@ -284,7 +284,7 @@ abilities:
     enable_message: true
     cooldown_ticks: 6000
   auraskills/bleed:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 3.0
     value_per_level: 3.0
     secondary_base_value: 0.5
@@ -441,7 +441,7 @@ abilities:
     max_level: 0
     excluded_enchantments: []
   auraskills/lucky_table:
-    enabled: true
+    enabled: false  # Shop-exclusive ability
     base_value: 5.0
     value_per_level: 1.0
     unlock: '{start}+5'

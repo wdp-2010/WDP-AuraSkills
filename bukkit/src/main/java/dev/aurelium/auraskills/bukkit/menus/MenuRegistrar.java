@@ -54,10 +54,7 @@ public class MenuRegistrar {
         buildMenu("sources", menu -> new SourcesMenu(plugin).build(menu));
         buildMenu("abilities", menu -> new AbilitiesMenu(plugin).build(menu));
         buildMenu("stat_info", menu -> new StatInfoMenu(plugin).build(menu));
-        buildMenu("shop", menu -> new ShopMenu(plugin).build(menu));
-        buildMenu("shop_sell", menu -> new SellItemsMenu(plugin).build(menu));
-        buildMenu("shop_buy", menu -> new BuyItemsMenu(plugin).build(menu));
-        buildMenu("shop_levels", menu -> new LevelShopMenu(plugin).build(menu));
+        // Keep only the new ability shop menu for compatibility with the Slate system
         buildMenu("shop_abilities", menu -> new AbilityShopMenu(plugin).build(menu));
 
         for (String nonDefault : ((ApiMenuManager) plugin.getApiBukkit().getMenuManager()).getNonDefaultMenuNames()) {

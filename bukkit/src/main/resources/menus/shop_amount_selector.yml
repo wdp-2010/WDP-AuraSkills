@@ -1,0 +1,73 @@
+title: '<yellow><bold>{action} {item_name}'
+size: 3
+fill:
+  enabled: true
+  material: gray_stained_glass_pane
+items:
+  item_display:
+    pos: 1,4
+    material: diamond
+    display_name: '<white><bold>{item_name}'
+    lore:
+    - '<gray>▸ {action} Price: <yellow>{price} coins each'
+    - '<gray>▸ Your Balance: <yellow>{balance} coins'
+    - '<gray>▸ You have: <yellow>{player_count}'
+    - ' '
+    - '<yellow>Select amount below:'
+  back:
+    pos: 2,0
+    material: arrow
+    display_name: '<yellow><bold>← Back to Market'
+  close:
+    pos: 2,8
+    material: barrier
+    display_name: '<red><bold>Close'
+  amount_1:
+    pos: 2,1
+    material: lime_concrete
+    display_name: '<green><bold>1x'
+    lore:
+    - '<gray>Cost: <yellow>{cost_1} coins'
+    - ' '
+    - '<green>Click to {action_lower} 1'
+  amount_5:
+    pos: 2,2
+    material: yellow_concrete
+    display_name: '<yellow><bold>5x'
+    lore:
+    - '<gray>Cost: <yellow>{cost_5} coins'
+    - ' '
+    - '<yellow>Click to {action_lower} 5'
+  amount_10:
+    pos: 2,3
+    material: orange_concrete
+    display_name: '<gold><bold>10x'
+    lore:
+    - '<gray>Cost: <yellow>{cost_10} coins'
+    - ' '
+    - '<gold>Click to {action_lower} 10'
+  amount_32:
+    pos: 2,5
+    material: red_concrete
+    display_name: '<red><bold>32x'
+    lore:
+    - '<gray>Cost: <yellow>{cost_32} coins'
+    - ' '
+    - '<red>Click to {action_lower} 32'
+  amount_64:
+    pos: 2,6
+    material: purple_concrete
+    display_name: '<dark_purple><bold>64x'
+    lore:
+    - '<gray>Cost: <yellow>{cost_64} coins'
+    - ' '
+    - '<dark_purple>Click to {action_lower} 64'
+  amount_all:
+    pos: 2,7
+    material: blue_concrete
+    display_name: '<blue><bold>All'
+    lore:
+    - '<gray>Amount: <yellow>{all_amount}'
+    - '<gray>Cost: <yellow>{cost_all} coins'
+    - ' '
+    - '<blue>Click to {action_lower} all you have'

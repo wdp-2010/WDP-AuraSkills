@@ -5,6 +5,8 @@
 # |             NEVER hard-code values - everything goes here!                 | #
 # +----------------------------------------------------------------------------+ #
 
+file_version: 1
+
 # Shop feature toggles
 enabled: true
 debug_mode: false
@@ -16,10 +18,18 @@ level_purchase:
   base_cost: 100.0
   # Exponential multiplier (cost = base * multiplier ^ (level / 10))
   cost_multiplier: 1.5
+  # Maximum levels that can be purchased per skill (0 = unlimited)
+  max_purchasable_levels: 50
   # Per-skill overrides (optional)
   skill_costs:
     farming: 80.0
     mining: 120.0
+    # Add more skills as needed
+  # Per-skill max level overrides (optional)
+  skill_max_levels:
+    farming: 75
+    mining: 50
+    fighting: 100
     # Add more skills as needed
 
 # XP Purchase Settings (REMOVED - Use level purchase instead)
@@ -41,29 +51,28 @@ level_rewards:
     mining: 60.0
     # Add more skills as needed
 
-# Item Selling System
+# Item Selling System - QUEUE-BASED COOLDOWN
+# How it works:
+#   - Each item has a max_amount (e.g., 4) and a cooldown (e.g., 30 minutes)
+#   - Sell 4 items → all 4 go on individual 30-minute cooldowns
+#   - Wait 30 minutes → 1 slot becomes available again (can sell 1 more)
+#   - Wait another 30 minutes → another slot opens (can sell 1 more)
+#   - Each item releases from cooldown individually, one at a time
 sell_items:
   enabled: true
-  # Global cooldown for all items (seconds) - prevents spam selling
-  global_cooldown: 300  # 5 minutes
+  # Global cooldown for all items (seconds) - applies per item sold
+  global_cooldown: 1800  # 30 minutes (default if item doesn't specify its own cooldown)
   # List of sellable items with their prices (RARE ITEMS ONLY)
   items:
     # ═══════════════════════════════════════════════════════════════════════
     # TIER 1: Legendary Items (500-2000 coins)
     # ═══════════════════════════════════════════════════════════════════════
-    DRAGON_EGG:
-      enabled: true
-      price: 2000.0
-      cooldown: 3600  # 1 hour - very rare
-      display_name: "<light_purple>Dragon Egg"
-      lore:
-        - "<gray>The rarest trophy in existence"
-        - "<yellow>Sells for: {price} coins"
     
     DRAGON_HEAD:
       enabled: true
       price: 800.0
-      cooldown: 1800  # 30 minutes
+      cooldown: 21600  # 6 hours per item
+      max_amount: 1  # Can sell 1, then wait 6 hours for it to be available again
       display_name: "<dark_purple>Dragon Head"
       lore:
         - "<gray>A fearsome decoration"
@@ -72,7 +81,8 @@ sell_items:
     NETHER_STAR:
       enabled: true
       price: 500.0
-      cooldown: 600  # 10 minutes
+      cooldown: 3600  # 1 hour per item
+      max_amount: 2  # Can sell 2, then each releases after 1 hour individually
       display_name: "<white>Nether Star"
       lore:
         - "<gray>Dropped by the Wither boss"
@@ -84,6 +94,8 @@ sell_items:
     ELYTRA:
       enabled: true
       price: 400.0
+      cooldown: 3600  # 1 hour per item
+      max_amount: 3  # Can sell 3, then each releases after 1 hour individually
       display_name: "<gray>Elytra"
       lore:
         - "<gray>Rare End wings for flight"
@@ -92,6 +104,8 @@ sell_items:
     NETHERITE_INGOT:
       enabled: true
       price: 250.0
+      cooldown: 1800  # 30 minutes per item
+      max_amount: 15  # Can sell 15, then each releases after 30 minutes individually
       display_name: "<dark_red>Netherite Ingot"
       lore:
         - "<gray>The strongest material"
@@ -100,6 +114,8 @@ sell_items:
     BEACON:
       enabled: true
       price: 300.0
+      cooldown: 3600  # 1 hour per item
+      max_amount: 1  # Can sell 1, wait 1 hour for it to be available again
       display_name: "<white>Beacon"
       lore:
         - "<gray>Grants powerful buffs"
@@ -108,6 +124,8 @@ sell_items:
     TOTEM_OF_UNDYING:
       enabled: true
       price: 350.0
+      cooldown: 2700  # 45 minutes per item
+      max_amount: 2  # Can sell 2, each releases after 45 minutes individually
       display_name: "<gold>Totem of Undying"
       lore:
         - "<gray>Grants a second chance at life"
@@ -116,6 +134,8 @@ sell_items:
     HEART_OF_THE_SEA:
       enabled: true
       price: 200.0
+      cooldown: 1800  # 30 minutes per item
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<aqua>Heart of the Sea"
       lore:
         - "<gray>Powers the conduit"
@@ -127,6 +147,8 @@ sell_items:
     ANCIENT_DEBRIS:
       enabled: true
       price: 180.0
+      cooldown: 1800  # 30 minutes per item
+      max_amount: 5  # Can sell 5, each releases after 30 minutes individually
       display_name: "<dark_purple>Ancient Debris"
       lore:
         - "<gray>Rare nether ore"
@@ -135,14 +157,28 @@ sell_items:
     TRIDENT:
       enabled: true
       price: 150.0
+      cooldown: 1800  # 30 minutes per item
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<aqua>Trident"
       lore:
         - "<gray>Rare drowned weapon"
         - "<yellow>Sells for: {price} coins"
     
+    # Example: PRISMARINE_SHARD with your exact use case
+    PRISMARINE_SHARD:
+      enabled: true
+      price: 5.0
+      cooldown: 1800  # 30 minutes per item
+      max_amount: 4  # Sell 4 → wait 30 min → 1 available → sell 1 → wait 30 min → 1 available → etc.
+      display_name: "<aqua>Prismarine Shard"
+      lore:
+        - "<gray>Drops from ocean monuments"
+        - "<yellow>Sells for: {price} coins"
+    
     WITHER_SKELETON_SKULL:
       enabled: true
       price: 120.0
+      cooldown: 1200  # 20 minutes
       display_name: "<dark_gray>Wither Skeleton Skull"
       lore:
         - "<gray>Needed to summon the Wither"
@@ -194,6 +230,7 @@ sell_items:
     EMERALD:
       enabled: true
       price: 80.0
+      cooldown: 900  # 15 minutes
       display_name: "<green>Emerald"
       lore:
         - "<gray>Rare trading gem"
@@ -335,11 +372,15 @@ buy_items:
     NETHER_STAR:
       enabled: true
       price: 1500.0
-      stock: -1
+      stock: 50  # Limited stock per server restart
+      max_stock: 50  # Maximum stock level
+      restock_interval: 86400  # Restock every 24 hours (seconds)
+      restock_amount: 10  # Amount to restock
       display_name: "<white>Nether Star"
       lore:
         - "<gray>Used to craft beacons"
         - "<yellow>Costs: {price} coins"
+        - "<aqua>Stock: {stock}/{max_stock}"
     
     # ═══════════════════════════════════════════════════════════════════════
     # TIER 2: Epic Items
@@ -347,16 +388,20 @@ buy_items:
     ELYTRA:
       enabled: true
       price: 1200.0
-      stock: -1
+      stock: 25
+      max_stock: 25
+      restock_interval: 172800  # Restock every 48 hours
+      restock_amount: 5
       display_name: "<gray>Elytra"
       lore:
         - "<gray>Rare End wings for flight"
         - "<yellow>Costs: {price} coins"
+        - "<aqua>Stock: {stock}/{max_stock}"
     
     NETHERITE_INGOT:
       enabled: true
       price: 750.0
-      stock: -1
+      stock: -1  # Unlimited stock
       display_name: "<dark_red>Netherite Ingot"
       lore:
         - "<gray>The strongest material"

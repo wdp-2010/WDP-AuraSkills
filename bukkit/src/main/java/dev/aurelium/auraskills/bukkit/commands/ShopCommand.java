@@ -24,14 +24,15 @@ public class ShopCommand extends BaseCommand {
     @CommandPermission("auraskills.command.shop")
     @Description("Opens the skill coins shop menu")
     public void onShop(Player player) {
-        plugin.getSlate().openMenu(player, "shop");
+        // Use main shop implementation
+        plugin.getMainShopMenu().openMainMenu(player);
     }
 
     @Subcommand("debug")
     @CommandPermission("auraskills.command.shop.debug")
     @Description("Shows shop configuration debug information")
     public void onDebug(CommandSender sender) {
-        SkillPointsShop shop = new SkillPointsShop(plugin);
+        SkillPointsShop shop = plugin.getShopManager().getShop();
         
         sender.sendMessage("§6§lShop Debug Information:");
         sender.sendMessage("§7━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
@@ -90,5 +91,13 @@ public class ShopCommand extends BaseCommand {
         } catch (Exception e) {
             sender.sendMessage("§cFailed to reload shop configuration: " + e.getMessage());
         }
+    }
+
+    @Subcommand("test")
+    @CommandPermission("auraskills.command.shop.test")
+    @Description("Opens the merged shop menu directly for testing")
+    public void onTest(Player player) {
+        plugin.getSlate().openMenu(player, "shop_merged");
+        player.sendMessage("§aOpening merged shop menu...");
     }
 }
