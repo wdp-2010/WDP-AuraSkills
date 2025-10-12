@@ -26,6 +26,7 @@ templates:
           1: '<gray>'
           2: '<dark_aqua>'
       - ' '
+      - '{purchase_info}'
       - '<red>{{locked}}'
   locked_mana_ability:
     pos: 2,4

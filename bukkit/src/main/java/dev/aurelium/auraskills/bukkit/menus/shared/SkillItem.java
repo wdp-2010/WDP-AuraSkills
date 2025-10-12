@@ -118,6 +118,7 @@ public class SkillItem {
     public void buildComponents(MenuBuilder menu) {
         statsLeveled(menu);
         abilityLevels(menu);
+        purchasableAbilities(menu);
         manaAbilityInfo(menu);
         progress(menu);
         maxLevel(menu);
@@ -167,6 +168,75 @@ public class SkillItem {
                 return builder.build();
             });
             component.shouldShow(t -> !t.value().getAbilities().isEmpty());
+        });
+    }
+
+    public void purchasableAbilities(MenuBuilder menu) {
+        menu.component("purchasable_abilities", Skill.class, component -> {
+            component.replace("entries", p -> {
+                var builder = new ListBuilder(p.data().listData());
+                User user = plugin.getUser(p.player());
+                
+                // Get skill ID for filtering
+                String skillId = p.value().getId().toString();
+                
+                // Check if there are any purchasable abilities for this skill
+                var shop = new dev.aurelium.auraskills.common.economy.SkillPointsShop(plugin);
+                var buyableAbilities = shop.getBuyableAbilities();
+                
+                for (var entry : buyableAbilities.entrySet()) {
+                    var buyableAbility = entry.getValue();
+                    if (buyableAbility.requiredSkill.equals(skillId)) {
+                        String abilityName = entry.getKey().replace("auraskills/", "").replace("_", " ");
+                        
+                        // Check if player meets requirements
+                        int playerLevel = user.getSkillLevel(p.value());
+                        boolean canPurchase = playerLevel >= buyableAbility.requiredLevel && user.getSkillCoins() >= buyableAbility.cost;
+                        boolean alreadyOwned = false;
+                        
+                        // Check if already owned
+                        try {
+                            dev.aurelium.auraskills.api.ability.Ability ability = plugin.getAbilityRegistry().getOrNull(dev.aurelium.auraskills.api.registry.NamespacedId.fromString(entry.getKey()));
+                            if (ability != null) {
+                                alreadyOwned = user.getAbilityLevel(ability) > 0;
+                            }
+                        } catch (Exception e) {
+                            // Ignore
+                        }
+                        
+                        String status;
+                        if (alreadyOwned) {
+                            status = "§aOwned";
+                        } else if (canPurchase) {
+                            status = "§ePurchasable";
+                        } else if (playerLevel < buyableAbility.requiredLevel) {
+                            status = "§cLevel " + buyableAbility.requiredLevel + " required";
+                        } else {
+                            status = "§cNeed " + (int) buyableAbility.cost + " coins";
+                        }
+                        
+                        String entryFormat = p.menu().getFormat("purchasable_ability_entry");
+                        if (entryFormat == null) {
+                            entryFormat = "§6{name} §7- {status} §8(§6{cost} coins§8)";
+                        }
+
+                        builder.append(entryFormat,
+                                "{name}", abilityName,
+                                "{status}", status,
+                                "{cost}", String.valueOf((int) buyableAbility.cost),
+                                "{required_level}", String.valueOf(buyableAbility.requiredLevel));
+                    }
+                }
+                
+                return builder.build();
+            });
+            component.shouldShow(t -> {
+                // Only show if there are purchasable abilities for this skill
+                String skillId = t.value().getId().toString();
+                var shop = new dev.aurelium.auraskills.common.economy.SkillPointsShop(plugin);
+                return shop.getBuyableAbilities().values().stream()
+                    .anyMatch(ability -> ability.requiredSkill.equals(skillId));
+            });
         });
     }
 

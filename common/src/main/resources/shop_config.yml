@@ -473,91 +473,119 @@ buyable_abilities:
   enabled: true
   
   # List of abilities that can be purchased
-  # Format: ability_id -> cost and requirements
+  # Format: ability_key -> cost and requirements
   abilities:
-    # Farming - Growth Aura (powerful AOE effect)
-    growth_aura:
-      cost: 5000.0
-      skill_requirement:
-        farming: 50
+    # Farming - Growth Aura (powerful AOE effect) - Level 25 requirement
+    auraskills/growth_aura:
+      cost: 3000.0
+      skill_requirement: auraskills/farming
+      required_level: 25
       display_name: "<green>Growth Aura"
       description:
-        - "<gray>Crops within 5 blocks grow faster"
+        - "<gray>Crops within 30 blocks grow faster"
         - "<gray>A powerful farming enhancement"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Farming Level 50"
-        - "  <gray>• 5000 Skill Coins"
+        - "  <gray>• Farming Level 25"
+        - "  <gray>• 3000 Skill Coins"
     
-    # Foraging - Shredder (chance-based enhancement)
-    shredder:
+    # Mining - Hardened Armor (defensive boost) - Level 30 requirement  
+    auraskills/hardened_armor:
       cost: 4000.0
-      skill_requirement:
-        foraging: 40
-      display_name: "<red>Shredder"
+      skill_requirement: auraskills/mining
+      required_level: 30
+      display_name: "<blue>Hardened Armor"
       description:
-        - "<gray>Chance to deal 3x durability damage"
-        - "<gray>Destroy tools faster for more XP"
+        - "<gray>Reduced damage while mining"
+        - "<gray>Essential for deep excavations"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Foraging Level 40"
+        - "  <gray>• Mining Level 30"
         - "  <gray>• 4000 Skill Coins"
     
-    # Fighting - Bleed (combat advantage)
-    bleed:
-      cost: 6000.0
-      skill_requirement:
-        fighting: 60
+    # Fighting - Bleed (combat advantage) - Level 35 requirement
+    auraskills/bleed:
+      cost: 5000.0
+      skill_requirement: auraskills/fighting
+      required_level: 35
       display_name: "<dark_red>Bleed"
       description:
         - "<gray>Chance to make enemies bleed"
         - "<gray>Powerful in extended combat"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Fighting Level 60"
+        - "  <gray>• Fighting Level 35"
+        - "  <gray>• 5000 Skill Coins"
+    
+    # Archery - Stun (crowd control) - Level 30 requirement
+    auraskills/stun:
+      cost: 3500.0
+      skill_requirement: auraskills/archery
+      required_level: 30
+      display_name: "<yellow>Stun"
+      description:
+        - "<gray>Chance to stun enemies with arrows"
+        - "<gray>Powerful crowd control ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Archery Level 30"
+        - "  <gray>• 3500 Skill Coins"
+    
+    # Fishing - Epic Catch (rare loot) - Level 40 requirement
+    auraskills/epic_catch:
+      cost: 6000.0
+      skill_requirement: auraskills/fishing
+      required_level: 40
+      display_name: "<aqua>Epic Catch"
+      description:
+        - "<gray>Chance to catch epic treasures"
+        - "<gray>Legendary fishing ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Fishing Level 40"
         - "  <gray>• 6000 Skill Coins"
     
-    # Agility - Thunder Fall (rare ability)
-    thunder_fall:
+    # Defense - No Debuff (immunity) - Level 45 requirement
+    auraskills/no_debuff:
       cost: 7000.0
-      skill_requirement:
-        agility: 70
-      display_name: "<yellow>Thunder Fall"
+      skill_requirement: auraskills/defense
+      required_level: 45
+      display_name: "<light_purple>No Debuff"
       description:
-        - "<gray>Strike like lightning from above"
-        - "<gray>Deal massive fall damage to enemies"
+        - "<gray>Immunity to negative effects"
+        - "<gray>Ultimate defensive ability"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Agility Level 70"
+        - "  <gray>• Defense Level 45"
         - "  <gray>• 7000 Skill Coins"
     
-    # Alchemy - Lingering (advanced brewing)
-    lingering:
-      cost: 5500.0
-      skill_requirement:
-        alchemy: 55
-      display_name: "<pink>Lingering"
+    # Excavation - Lucky Spades (treasure finding) - Level 35 requirement
+    auraskills/lucky_spades:
+      cost: 4500.0
+      skill_requirement: auraskills/excavation
+      required_level: 35
+      display_name: "<gold>Lucky Spades"
       description:
-        - "<gray>Brew lingering potions"
-        - "<gray>Master alchemist ability"
+        - "<gray>Chance to find rare treasures"
+        - "<gray>While digging with spades"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Alchemy Level 55"
-        - "  <gray>• 5500 Skill Coins"
+        - "  <gray>• Excavation Level 35"
+        - "  <gray>• 4500 Skill Coins"
     
-    # Healing - Revival (ultimate ability)
-    revival:
-      cost: 10000.0
-      skill_requirement:
-        healing: 80
-      display_name: "<light_purple>Revival"
+    # Enchanting - Lucky Table (enhancement boost) - Level 50 requirement
+    auraskills/lucky_table:
+      cost: 8000.0
+      skill_requirement: auraskills/enchanting
+      required_level: 50
+      display_name: "<purple>Lucky Table"
       description:
-        - "<gray>Chance to revive on death"
-        - "<gray>The ultimate survival ability"
+        - "<gray>Better enchantment outcomes"
+        - "<gray>Master enchanter ability"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Healing Level 80"
-        - "  <gray>• 10000 Skill Coins"
+        - "  <gray>• Enchanting Level 50"
+        - "  <gray>• 8000 Skill Coins"
 
 # Balance Settings
 balance:

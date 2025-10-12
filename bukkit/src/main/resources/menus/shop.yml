@@ -62,4 +62,4 @@ items:
     - ' '
     - '<dark_gray>Abilities available: <yellow>{ability_count}'
     - ' '
-    - '<dark_gray>Coming in future update!'
+    - '<yellow>Click to open'

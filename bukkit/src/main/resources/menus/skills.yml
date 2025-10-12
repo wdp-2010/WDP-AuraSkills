@@ -33,6 +33,16 @@ items:
     - '<gray>{{stats_desc}}'
     - ' '
     - '<yellow>{{stats_click}}'
+  skill_coins_balance:
+    pos: 1,8
+    material: sunflower
+    display_name: '<gold>Skill Coins Balance'
+    lore:
+    - '<gray>Your current balance:'
+    - '<yellow>{skill_coins} ⛁'
+    - ' '
+    - '<dark_gray>Earn coins by leveling skills'
+    - '<dark_gray>Spend in the shop (/sk shop)'
 templates:
   skill:
     contexts:
@@ -135,8 +145,8 @@ templates:
       style: '<gray>'
     - component: stats_leveled
     - component: ability_levels
+    - component: purchasable_abilities
     - component: mana_ability_info
-    - ' '
     - component: progress
     - component: max_level
     - component: skill_job_active
@@ -153,6 +163,11 @@ components:
     lore:
     - ' '
     - '<gray>{{ability_levels}}: {entries[]}'
+  purchasable_abilities:
+    context: Skill
+    lore:
+    - ' '
+    - '<gold>Shop Abilities: {entries[\n  ](2)}'
   mana_ability_info:
     context: Skill
     lore:
@@ -178,6 +193,7 @@ formats:
   stat_leveled_entry: '{color}{stat}<gray>'
   unlocked_ability_entry: '\n  <gold>{name} {level} <dark_gray>({info})'
   locked_ability_entry: '\n  <dark_gray><strikethrough>{name}'
+  purchasable_ability_entry: '<gray>- {name} <gold>{cost} coins {status}'
   duration_entry: '<gray>{{duration}}: <green>{duration}s '
   mana_cost_entry: '<gray>{{mana_cost}}: <aqua>{mana_cost} '
   cooldown_entry: '<gray>{{cooldown}}: <yellow>{cooldown}s '

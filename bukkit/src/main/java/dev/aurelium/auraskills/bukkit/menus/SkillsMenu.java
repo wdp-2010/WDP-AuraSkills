@@ -51,6 +51,18 @@ public class SkillsMenu {
             });
         });
 
+        // Skill Coins balance display
+        menu.item("skill_coins_balance", item -> {
+            item.replace("skill_coins", p -> {
+                User user = plugin.getUser(p.player());
+                return String.valueOf(user.getSkillCoins());
+            });
+            item.onClick(c -> {
+                // Open the shop when clicked
+                plugin.getSlate().openMenu(c.player(), "shop");
+            });
+        });
+
         menu.template("skill", Skill.class, template -> {
             // Sets text replacements and modifier
             skillItem.baseSkillItem(template);

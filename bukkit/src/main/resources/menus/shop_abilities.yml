@@ -1,0 +1,76 @@
+title: "Ability Shop"
+size: 54
+
+items:
+  close:
+    pos: [49]
+    material: BARRIER
+    display_name: "&cClose"
+    lore:
+      - "&7Click to close the menu"
+
+  back:
+    pos: [45]
+    material: ARROW
+    display_name: "&7← Back to Shop"
+    lore:
+      - "&7Click to go back to the main shop"
+
+  fill:
+    pos: [0, 1, 2, 3, 4, 5, 6, 7, 8, 36, 37, 38, 39, 40, 41, 42, 43, 44, 46, 47, 48, 50, 51, 52, 53]
+    material: BLACK_STAINED_GLASS_PANE
+    display_name: " "
+
+  balance:
+    pos: [4]
+    material: SUNFLOWER
+    display_name: "&6&lYour Balance"
+    lore:
+      - "&7Skill Coins: &6{skill_coins}"
+      - ""
+      - "&7Purchase abilities with"
+      - "&7your earned Skill Coins!"
+
+  title: '<purple><bold>Buy Abilities'
+size: 6
+fill:
+  enabled: true
+  material: black_stained_glass_pane
+
+items:
+  close:
+    pos: 5,8
+    material: barrier
+    display_name: '<red><bold>Close'
+    
+  back:
+    pos: 5,0
+    material: arrow
+    display_name: '<green>← Back to Shop'
+    lore:
+      - '<gray>Return to main shop menu'
+      
+  balance:
+    pos: 0,4
+    material: sunflower
+    display_name: '<gold><bold>Your Balance'
+    lore:
+      - '<gray>Skill Coins: <yellow><bold>{skill_coins}'
+      - ' '
+      - '<gray>Purchase abilities!'
+
+templates:
+  ability:
+    material: diamond
+    display_name: '<white>{ability_name}'
+    lore:
+      - '<gray>Skill: <yellow>{skill_name}'
+      - '<gray>Required Level: <white>{required_level}'
+      - '<gray>Cost: <yellow>{cost} Skill Coins'
+      - ' '
+      - '{description}'
+      - ' '
+      - '{requirement_lore}'
+      - '{afford_lore}'
+      - ' '
+      - '{click_lore}'

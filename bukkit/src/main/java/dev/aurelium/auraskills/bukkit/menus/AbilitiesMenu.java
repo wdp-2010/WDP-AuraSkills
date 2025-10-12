@@ -48,6 +48,44 @@ public class AbilitiesMenu {
                     "{guaranteed_value}", plugin.getAbilityManager().getGuaranteedValue(p.value(), 1)));
             template.replace("skill", p -> ((Skill) p.menu().getProperty("skill")).getDisplayName(p.locale(), false));
             template.replace("level", p -> RomanNumber.toRoman(p.value().getUnlock(), plugin));
+            template.replace("purchase_info", p -> {
+                // Check if this ability is purchasable in the shop
+                var shopSystem = new dev.aurelium.auraskills.common.economy.SkillPointsShop(plugin);
+                String abilityKey = p.value().getId().toString();
+                
+                if (shopSystem.getBuyableAbilities().containsKey(abilityKey)) {
+                    var buyableAbility = shopSystem.getBuyableAbilities().get(abilityKey);
+                    var user = plugin.getUser(p.player());
+                    
+                    // Check if player meets requirements
+                    boolean meetsRequirements = true;
+                    if (!buyableAbility.requiredSkill.equals("none")) {
+                        var skill = plugin.getSkillRegistry().getOrNull(dev.aurelium.auraskills.api.registry.NamespacedId.fromString(buyableAbility.requiredSkill));
+                        if (skill != null && user.getSkillLevel(skill) < buyableAbility.requiredLevel) {
+                            meetsRequirements = false;
+                        }
+                    }
+                    
+                    if (meetsRequirements && user.getSkillCoins() >= buyableAbility.cost) {
+                        return "&e⭐ Purchasable for &6" + (int) buyableAbility.cost + " Skill Coins &7(Click to open shop)";
+                    } else if (meetsRequirements) {
+                        return "&c⭐ Purchasable for &6" + (int) buyableAbility.cost + " Skill Coins &c(Not enough coins)";
+                    } else {
+                        return "&c⭐ Purchasable for &6" + (int) buyableAbility.cost + " Skill Coins &c(Requirements not met)";
+                    }
+                }
+                return "";
+            });
+
+            template.onClick(c -> {
+                // Check if this ability is purchasable and redirect to shop
+                var shopSystem = new dev.aurelium.auraskills.common.economy.SkillPointsShop(plugin);
+                String abilityKey = c.value().getId().toString();
+                
+                if (shopSystem.getBuyableAbilities().containsKey(abilityKey)) {
+                    plugin.getSlate().openMenu(c.player(), "shop_abilities");
+                }
+            });
 
             template.definedContexts(m -> {
                 Skill skill = (Skill) m.menu().getProperty("skill");
