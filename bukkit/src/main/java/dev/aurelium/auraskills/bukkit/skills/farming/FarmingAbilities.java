@@ -114,6 +114,9 @@ public class FarmingAbilities extends BukkitAbilityImpl {
 
         if (failsChecks(player, ability)) return;
         User user = plugin.getUser(player);
+        
+        // Check if shop-exclusive ability has been purchased
+        if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/growth_aura")) return;
 
         int extraStages = rollExtraStages(user);
         if (extraStages == 0) return;

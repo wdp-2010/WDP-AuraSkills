@@ -169,7 +169,6 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
     private ConfirmManager confirmManager;
     private PresetManager presetManager;
     private ShopManager shopManager;
-    private MainShopMenu mainShopMenu;
     private PlatformUtil platformUtil;
     private BukkitAntiAfkManager antiAfkManager;
     private SkillCoinsManager skillCoinsManager;
@@ -295,7 +294,6 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
             // Initialize shop system
             shopManager = new ShopManager(this);
             shopManager.initialize();
-            mainShopMenu = new MainShopMenu(this);
             registerAndLoadMenus();
             // Call SkillsLoadEvent
             SkillsLoadEvent event = new SkillsLoadEvent(skillManager.getSkillValues());
@@ -539,7 +537,7 @@ public class AuraSkills extends JavaPlugin implements AuraSkillsPlugin {
     }
 
     public MainShopMenu getMainShopMenu() {
-        return mainShopMenu;
+        return shopManager.getMainShopMenu();
     }
 
     public AuraSkillsBukkit getApiBukkit() {

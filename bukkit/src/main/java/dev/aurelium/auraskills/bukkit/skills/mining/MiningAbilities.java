@@ -82,6 +82,9 @@ public class MiningAbilities extends BukkitAbilityImpl {
         User user = plugin.getUser(player);
 
         if (failsChecks(player, ability)) return;
+        
+        // Check if shop-exclusive ability has been purchased
+        if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/hardened_armor")) return;
 
         // Applies ability
         if (rand.nextDouble() < (getValue(ability, user) / 100)) {

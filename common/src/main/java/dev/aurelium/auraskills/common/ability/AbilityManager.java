@@ -129,6 +129,19 @@ public abstract class AbilityManager {
         return abilityMap.containsKey(ability);
     }
 
+    /**
+     * Checks if an ability is shop-exclusive (must be purchased to use)
+     * @param ability the ability to check
+     * @return true if the ability has shop_exclusive: true in abilities.yml
+     */
+    public boolean isShopExclusive(Ability ability) {
+        LoadedAbility loadedAbility = abilityMap.get(ability);
+        if (loadedAbility == null) {
+            return false;
+        }
+        return loadedAbility.config().shopExclusive();
+    }
+
     public String getChanceValue(Ability ability, int level) {
         return NumberUtil.format1(ability.getValue(level) - (Math.floor(ability.getValue(level) / 100) * 100));
     }

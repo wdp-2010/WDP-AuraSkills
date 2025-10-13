@@ -37,44 +37,56 @@ public class MainShopMenu implements Listener {
     }
     
     public void openMainMenu(Player player) {
-        plugin.getLogger().info("MainShopMenu - Opening main shop menu for " + player.getName());
+        Inventory inventory = Bukkit.createInventory(null, 45, "§6Skill Coins Shop");
         
-        Inventory inventory = Bukkit.createInventory(null, 27, "§6§lSkill Coins Shop");
-        
-        // Add player balance info
         User user = plugin.getUser(player);
-        ItemStack balanceItem = createBalanceItem(user);
-        inventory.setItem(4, balanceItem);
         
-        // Add shop categories
+        // Fill with black glass panes like skills menu
+        ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName(" ");
+        filler.setItemMeta(fillerMeta);
+        
+        for (int i = 0; i < 45; i++) {
+            inventory.setItem(i, filler);
+        }
+        
+        // Balance at top left (like "Your Skills" in skills menu)
+        ItemStack balanceItem = createBalanceItem(user);
+        inventory.setItem(0, balanceItem);
+        
+        // Main shop items centered in row 2 (like skills are displayed)
         ItemStack itemShopItem = createItemShopItem();
-        inventory.setItem(10, itemShopItem);
+        inventory.setItem(11, itemShopItem);
         
         ItemStack levelShopItem = createLevelShopItem();
         inventory.setItem(13, levelShopItem);
         
         ItemStack abilityShopItem = createAbilityShopItem();
-        inventory.setItem(16, abilityShopItem);
+        inventory.setItem(15, abilityShopItem);
         
-        // Add close button
+        // Cooldown tracker in row 3
+        ItemStack cooldownTrackerItem = createCooldownTrackerItem(player);
+        inventory.setItem(22, cooldownTrackerItem);
+        
+        // Close button at bottom right (like skills menu)
         ItemStack closeItem = createCloseItem();
-        inventory.setItem(22, closeItem);
+        inventory.setItem(44, closeItem);
         
         player.openInventory(inventory);
     }
     
     private ItemStack createBalanceItem(User user) {
-        ItemStack item = new ItemStack(Material.GOLD_INGOT);
+        ItemStack item = new ItemStack(Material.SUNFLOWER);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§6§lYour Balance");
+        meta.setDisplayName("§6Skill Coins Balance");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Skill Coins: §e§l" + String.format("%.0f", user.getSkillCoins()));
-        lore.add("");
-        lore.add("§a§lHow to earn:");
-        lore.add("§a• Complete skill leveling tasks");
-        lore.add("§a• Sell valuable items");
-        lore.add("§a• Trade with other players");
+        lore.add("§7Your current balance:");
+        lore.add("§e" + String.format("%.0f", user.getSkillCoins()) + " ⛁");
+        lore.add(" ");
+        lore.add("§8Earn coins by leveling skills");
+        lore.add("§8Spend in the shop categories below");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -84,15 +96,13 @@ public class MainShopMenu implements Listener {
     private ItemStack createItemShopItem() {
         ItemStack item = new ItemStack(Material.CHEST);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§b§lItem Shop");
+        meta.setDisplayName("§bItem Shop");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Buy and sell valuable items");
-        lore.add("");
-        lore.add("§e" + shop.getSellableItems().size() + " §7sellable items");
-        lore.add("§e" + shop.getBuyableItems().size() + " §7buyable items");
-        lore.add("");
-        lore.add("§a§lClick to browse!");
+        lore.add("§7Buy and sell items for");
+        lore.add("§7skill coins");
+        lore.add(" ");
+        lore.add("§eClick to open");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -102,15 +112,13 @@ public class MainShopMenu implements Listener {
     private ItemStack createLevelShopItem() {
         ItemStack item = new ItemStack(Material.EXPERIENCE_BOTTLE);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§e§lLevel Shop");
+        meta.setDisplayName("§eLevel Shop");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Purchase skill levels directly");
-        lore.add("");
-        lore.add("§e15 §7purchasable skills");
-        lore.add("§7Configurable level limits");
-        lore.add("");
-        lore.add("§a§lClick to browse!");
+        lore.add("§7Purchase skill levels");
+        lore.add("§7directly with coins");
+        lore.add(" ");
+        lore.add("§eClick to open");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -120,36 +128,54 @@ public class MainShopMenu implements Listener {
     private ItemStack createAbilityShopItem() {
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§d§lAbility Shop");
+        meta.setDisplayName("§dAbility Shop");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Purchase powerful abilities");
-        lore.add("");
-        lore.add("§e" + shop.getBuyableAbilities().size() + " §7available abilities");
-        lore.add("");
-        lore.add("§a§lClick to browse!");
+        lore.add("§7Purchase exclusive abilities");
+        lore.add("§7not available through leveling");
+        lore.add(" ");
+        lore.add("§eClick to open");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
     }
     
-    private ItemStack createCloseItem() {
-        ItemStack item = new ItemStack(Material.BARRIER);
+    private ItemStack createCooldownTrackerItem(Player player) {
+        ItemStack item = new ItemStack(Material.CLOCK);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§c§lClose");
+        meta.setDisplayName("§6Cooldown Tracker");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Close the shop menu");
+        int cooldownCount = shop.getActiveCooldowns(player.getUniqueId().toString()).size();
+        
+        if (cooldownCount > 0) {
+            lore.add("§7View active sell cooldowns");
+            lore.add(" ");
+            lore.add("§e" + cooldownCount + " §7item" + (cooldownCount == 1 ? "" : "s") + " on cooldown");
+            lore.add(" ");
+            lore.add("§eClick to view");
+        } else {
+            lore.add("§7View active sell cooldowns");
+            lore.add(" ");
+            lore.add("§7No active cooldowns");
+        }
         
         meta.setLore(lore);
         item.setItemMeta(meta);
+        return item;
+    }
+
+    private ItemStack createCloseItem() {
+        ItemStack item = new ItemStack(Material.BARRIER);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§cClose");
         return item;
     }
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().equals("§6§lSkill Coins Shop")) return;
+        if (!event.getView().getTitle().equals("§6Skill Coins Shop")) return;
         
         event.setCancelled(true);
         
@@ -161,25 +187,27 @@ public class MainShopMenu implements Listener {
         int slot = event.getSlot();
         
         switch (slot) {
-            case 10: // Item Shop
-                plugin.getLogger().info("MainShopMenu - Opening item shop for " + player.getName());
+            case 11: // Item Shop
                 player.closeInventory();
                 itemShopMenu.openItemShop(player);
                 break;
                 
             case 13: // Level Shop
-                plugin.getLogger().info("MainShopMenu - Opening level shop for " + player.getName());
                 player.closeInventory();
                 plugin.getShopManager().getLevelShopMenu().openLevelShop(player);
                 break;
                 
-            case 16: // Ability Shop
-                plugin.getLogger().info("MainShopMenu - Opening ability shop for " + player.getName());
+            case 15: // Ability Shop
                 player.closeInventory();
                 abilityShopMenu.openAbilityShop(player);
                 break;
                 
-            case 22: // Close
+            case 22: // Cooldown Tracker
+                player.closeInventory();
+                plugin.getShopManager().getCooldownTrackerMenu().openCooldownTracker(player);
+                break;
+                
+            case 44: // Close
                 player.closeInventory();
                 break;
         }

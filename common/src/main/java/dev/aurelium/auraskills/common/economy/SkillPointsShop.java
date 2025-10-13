@@ -5,6 +5,7 @@ import dev.aurelium.auraskills.api.registry.NamespacedId;
 import dev.aurelium.auraskills.api.skill.Skill;
 import dev.aurelium.auraskills.common.AuraSkillsPlugin;
 import dev.aurelium.auraskills.common.config.ConfigurateLoader;
+import dev.aurelium.auraskills.common.message.type.CommandMessage;
 import dev.aurelium.auraskills.common.scheduler.TaskRunnable;
 import dev.aurelium.auraskills.common.user.User;
 import org.spongepowered.configurate.ConfigurationNode;
@@ -15,6 +16,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SkillPointsShop {
@@ -26,6 +29,7 @@ public class SkillPointsShop {
     private final Map<String, Integer> sellCooldowns; // Material -> cooldown seconds
     private final Map<String, Integer> maxAmounts; // Material -> max sellable amount
     private final Map<String, Map<String, List<Long>>> playerCooldowns; // UUID -> (Material -> list of sell timestamps)
+    private final Map<String, Map<String, Long>> playerLastNotified; // UUID -> (Material -> last notification timestamp)
     private final Map<String, Integer> itemStock; // Item -> current stock
     private int globalSellCooldown;
     private double levelBaseCost;
@@ -44,10 +48,98 @@ public class SkillPointsShop {
         this.sellCooldowns = new ConcurrentHashMap<>();
         this.maxAmounts = new ConcurrentHashMap<>();
         this.playerCooldowns = new ConcurrentHashMap<>();
+        this.playerLastNotified = new ConcurrentHashMap<>();
         this.itemStock = new ConcurrentHashMap<>();
         this.skillSpecificLevelCosts = new ConcurrentHashMap<>();
         this.skillMaxLevels = new ConcurrentHashMap<>();
         loadConfiguration();
+        startCooldownNotificationTask();
+    }
+
+    /**
+     * Starts the background task that checks for expired cooldowns and notifies players
+     */
+    private void startCooldownNotificationTask() {
+        // Run every 30 seconds to check for expired cooldowns
+        plugin.getScheduler().timerSync(new TaskRunnable() {
+            @Override
+            public void run() {
+                checkAndNotifyExpiredCooldowns();
+            }
+        }, 30 * 1000L, 30 * 1000L, java.util.concurrent.TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Checks all online players for expired cooldowns and sends notifications
+     */
+    private void checkAndNotifyExpiredCooldowns() {
+        long currentTime = System.currentTimeMillis();
+        
+        for (User user : plugin.getUserManager().getOnlineUsers()) {
+            String uuid = user.getUuid().toString();
+            Map<String, List<Long>> userCooldowns = playerCooldowns.get(uuid);
+            
+            if (userCooldowns == null || userCooldowns.isEmpty()) continue;
+            
+            Map<String, Long> lastNotified = playerLastNotified.computeIfAbsent(uuid, k -> new ConcurrentHashMap<>());
+            
+            for (Map.Entry<String, List<Long>> entry : userCooldowns.entrySet()) {
+                String material = entry.getKey();
+                List<Long> timestamps = entry.getValue();
+                
+                if (timestamps.isEmpty()) continue;
+                
+                int cooldownSeconds = sellCooldowns.getOrDefault(material, globalSellCooldown);
+                long cooldownMillis = cooldownSeconds * 1000L;
+                int maxAmount = maxAmounts.getOrDefault(material, 1);
+                
+                // Count how many timestamps have expired since last check
+                long lastNotifiedTime = lastNotified.getOrDefault(material, 0L);
+                int newlyAvailable = 0;
+                
+                for (Long timestamp : timestamps) {
+                    long expiryTime = timestamp + cooldownMillis;
+                    // If this timestamp expired after we last notified
+                    if (expiryTime <= currentTime && expiryTime > lastNotifiedTime) {
+                        newlyAvailable++;
+                    }
+                }
+                
+                if (newlyAvailable > 0) {
+                    // Calculate current available amount
+                    int available = getRemainingAmount(uuid, material);
+                    
+                    // Send notification to player
+                    String materialName = formatMaterialName(material);
+                    String message = plugin.getMsg(CommandMessage.SHOP_COOLDOWN_EXPIRED, user.getLocale())
+                        .replace("{item}", materialName)
+                        .replace("{available}", String.valueOf(available))
+                        .replace("{max}", String.valueOf(maxAmount));
+                    
+                    user.sendMessage(message);
+                    
+                    // Update last notified time
+                    lastNotified.put(material, currentTime);
+                    
+                    if (debugMode) {
+                        plugin.logger().info("Notified " + user.getUsername() + " that " + newlyAvailable + "x " + material + " cooldown expired");
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Formats a material name for display (e.g., "PRISMARINE_SHARD" -> "Prismarine Shard")
+     */
+    private String formatMaterialName(String material) {
+        String[] words = material.toLowerCase().split("_");
+        StringBuilder formatted = new StringBuilder();
+        for (String word : words) {
+            if (formatted.length() > 0) formatted.append(" ");
+            formatted.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+        }
+        return formatted.toString();
     }
 
     public void loadConfiguration() {
@@ -354,7 +446,7 @@ public class SkillPointsShop {
     }
 
     /**
-     * Adds cooldown timestamps for each item sold
+     * Adds cooldown timestamps for each item sold and saves to storage
      */
     private void addCooldownTimestamps(String uuid, String material, int amount) {
         material = material.toUpperCase();
@@ -367,6 +459,9 @@ public class SkillPointsShop {
         for (int i = 0; i < amount; i++) {
             timestamps.add(currentTime);
         }
+        
+        // Save cooldowns to persistence immediately
+        saveCooldowns(uuid);
     }
 
     /**
@@ -520,16 +615,16 @@ public class SkillPointsShop {
             return new AbilityPurchaseResult(false, "Ability not available for purchase");
         }
 
-        // Check if user already has the ability
+        // Check if user already purchased this ability
+        if (user.hasPurchasedAbility(abilityKey)) {
+            return new AbilityPurchaseResult(false, "Ability already purchased");
+        }
+
+        // Validate ability exists
         NamespacedId abilityId = NamespacedId.fromDefault(abilityKey);
         Ability ability = plugin.getAbilityRegistry().getOrNull(abilityId);
         if (ability == null) {
             return new AbilityPurchaseResult(false, "Ability not found");
-        }
-
-        int currentAbilityLevel = user.getAbilityLevel(ability);
-        if (currentAbilityLevel > 0) {
-            return new AbilityPurchaseResult(false, "Ability already unlocked");
         }
 
         // Check skill level requirement
@@ -549,20 +644,15 @@ public class SkillPointsShop {
             return new AbilityPurchaseResult(false, "Insufficient skill coins");
         }
 
-        // Purchase the ability - Set the skill level high enough to unlock it
-        Skill abilitySkill = ability.getSkill();
-        int requiredSkillLevel = ability.getUnlock();
-        int currentSkillLevel = user.getSkillLevel(abilitySkill);
-        
-        // Only increase skill level if user doesn't meet the unlock requirement
-        if (currentSkillLevel < requiredSkillLevel) {
-            user.setSkillLevel(abilitySkill, requiredSkillLevel);
-        }
-        
+        // Complete the purchase
+        user.addPurchasedAbility(abilityKey.toLowerCase());
         user.setSkillCoins(user.getSkillCoins() - buyableAbility.cost);
+        
+        // Save purchased abilities to database immediately
+        savePurchasedAbilities(user.getUuid().toString());
 
         if (debugMode) {
-            plugin.logger().info("User " + user.getUsername() + " purchased ability " + abilityKey + " for " + buyableAbility.cost + " skill points");
+            plugin.logger().info("User " + user.getUsername() + " purchased ability " + abilityKey + " for " + buyableAbility.cost + " skill coins");
         }
 
         return new AbilityPurchaseResult(true, null);
@@ -615,6 +705,47 @@ public class SkillPointsShop {
      */
     public boolean isBuyable(String material) {
         return buyableItems.containsKey(material.toUpperCase());
+    }
+
+    /**
+     * Gets the max amount that can be sold before cooldown for a specific material
+     */
+    public int getMaxAmount(String material) {
+        return maxAmounts.getOrDefault(material.toUpperCase(), 1);
+    }
+
+    /**
+     * Gets the cooldown time in seconds for a specific material
+     */
+    public int getSellCooldown(String material) {
+        return sellCooldowns.getOrDefault(material.toUpperCase(), globalSellCooldown);
+    }
+
+    /**
+     * Checks if an ability is shop-exclusive (must be purchased to use)
+     * Reads from the ability configuration's shop_exclusive flag
+     */
+    public boolean isShopExclusiveAbility(String abilityKey) {
+        Ability ability = plugin.getAbilityRegistry().getOrNull(NamespacedId.fromString(abilityKey));
+        if (ability == null) {
+            return false;
+        }
+        return plugin.getAbilityManager().isShopExclusive(ability);
+    }
+
+    /**
+     * Checks if a user can use a specific ability (either unlocked normally or purchased)
+     * @param user the user to check
+     * @param abilityKey the ability key (e.g., "auraskills/growth_aura")
+     * @return true if user can use the ability, false if it's shop-exclusive and not purchased
+     */
+    public boolean canUseAbility(User user, String abilityKey) {
+        // If it's not a shop-exclusive ability, they can use it normally
+        if (!isShopExclusiveAbility(abilityKey)) {
+            return true;
+        }
+        // For shop-exclusive abilities, check if they've purchased it
+        return user.hasPurchasedAbility(abilityKey);
     }
 
     public boolean isDebugMode() {
@@ -759,5 +890,172 @@ public class SkillPointsShop {
             this.displayName = displayName;
             this.description = description;
         }
+    }
+
+    // ========== DATABASE PERSISTENCE ==========
+
+    /**
+     * Loads cooldowns from storage provider's metadata system for a specific user.
+     * This is called when a player logs in.
+     */
+    public void loadCooldowns(String uuid) {
+        User user = plugin.getUserManager().getUser(java.util.UUID.fromString(uuid));
+        if (user == null) return;
+
+        Map<String, List<Long>> userCooldownMap = new ConcurrentHashMap<>();
+        
+        // Load from user metadata (shop.cooldowns.<material>)
+        Map<String, Object> metadata = user.getMetadata();
+        for (Map.Entry<String, Object> entry : metadata.entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith("shop.cooldowns.")) {
+                String material = key.substring("shop.cooldowns.".length()).toUpperCase();
+                Object value = entry.getValue();
+                
+                if (value instanceof String timestampsStr && !timestampsStr.isEmpty()) {
+                    List<Long> timestamps = new ArrayList<>();
+                    for (String tsStr : timestampsStr.split(",")) {
+                        try {
+                            timestamps.add(Long.parseLong(tsStr.trim()));
+                        } catch (NumberFormatException e) {
+                            plugin.logger().warn("Invalid timestamp in cooldown data: " + tsStr);
+                        }
+                    }
+                    if (!timestamps.isEmpty()) {
+                        userCooldownMap.put(material, timestamps);
+                    }
+                }
+            }
+        }
+        
+        if (!userCooldownMap.isEmpty()) {
+            playerCooldowns.put(uuid, userCooldownMap);
+            if (debugMode) {
+                plugin.logger().info("Loaded " + userCooldownMap.size() + " item cooldowns for user " + uuid);
+            }
+        }
+    }
+
+    /**
+     * Saves cooldowns to user metadata for persistence.
+     * This is called when cooldowns change or player logs out.
+     */
+    public void saveCooldowns(String uuid) {
+        User user = plugin.getUserManager().getUser(java.util.UUID.fromString(uuid));
+        if (user == null) return;
+
+        Map<String, List<Long>> userCooldowns = playerCooldowns.get(uuid);
+        Map<String, Object> metadata = user.getMetadata();
+        
+        // Clear old cooldown keys
+        metadata.keySet().removeIf(key -> key.startsWith("shop.cooldowns."));
+        
+        if (userCooldowns != null && !userCooldowns.isEmpty()) {
+            // Save each material's cooldowns to metadata
+            for (Map.Entry<String, List<Long>> entry : userCooldowns.entrySet()) {
+                String material = entry.getKey();
+                List<Long> timestamps = entry.getValue();
+                
+                if (!timestamps.isEmpty()) {
+                    // Join timestamps with commas
+                    String timestampsStr = String.join(",", 
+                        timestamps.stream().map(String::valueOf).toArray(String[]::new));
+                    metadata.put("shop.cooldowns." + material, timestampsStr);
+                }
+            }
+            
+            if (debugMode) {
+                plugin.logger().info("Saved " + userCooldowns.size() + " item cooldowns for user " + uuid);
+            }
+        }
+    }
+
+    /**
+     * Unloads cooldowns from memory when player logs out.
+     * Data is saved via user metadata system.
+     */
+    public void unloadCooldowns(String uuid) {
+        saveCooldowns(uuid); // Save to metadata before unloading
+        playerCooldowns.remove(uuid);
+        if (debugMode) {
+            plugin.logger().info("Unloaded cooldowns for user " + uuid);
+        }
+    }
+
+    /**
+     * Loads purchased abilities from user metadata
+     */
+    public void loadPurchasedAbilities(String uuid) {
+        User user = plugin.getUserManager().getUser(UUID.fromString(uuid));
+        if (user == null) return;
+
+        Object purchasedData = user.getMetadata().get("shop.purchased_abilities");
+        if (purchasedData instanceof String) {
+            String purchasedString = (String) purchasedData;
+            if (!purchasedString.isEmpty()) {
+                String[] abilityKeys = purchasedString.split(",");
+                for (String abilityKey : abilityKeys) {
+                    user.addPurchasedAbility(abilityKey.trim());
+                }
+                if (debugMode) {
+                    plugin.logger().info("Loaded " + abilityKeys.length + " purchased abilities for user " + uuid);
+                }
+            }
+        }
+    }
+
+    /**
+     * Saves purchased abilities to user metadata
+     */
+    public void savePurchasedAbilities(String uuid) {
+        User user = plugin.getUserManager().getUser(UUID.fromString(uuid));
+        if (user == null) return;
+
+        Set<String> purchasedAbilities = user.getPurchasedAbilities();
+        if (purchasedAbilities.isEmpty()) {
+            user.getMetadata().remove("shop.purchased_abilities");
+        } else {
+            String purchasedString = String.join(",", purchasedAbilities);
+            user.getMetadata().put("shop.purchased_abilities", purchasedString);
+        }
+
+        if (debugMode) {
+            plugin.logger().info("Saved " + purchasedAbilities.size() + " purchased abilities for user " + uuid);
+        }
+    }
+
+    /**
+     * Gets all materials currently on cooldown for a user with their expiry times.
+     * Returns map of material -> expiry timestamp (when next item becomes available)
+     */
+    public Map<String, Long> getActiveCooldowns(String uuid) {
+        Map<String, Long> result = new HashMap<>();
+        Map<String, List<Long>> userCooldowns = playerCooldowns.get(uuid);
+        
+        if (userCooldowns == null) return result;
+
+        long currentTime = System.currentTimeMillis();
+        
+        for (Map.Entry<String, List<Long>> entry : userCooldowns.entrySet()) {
+            String material = entry.getKey();
+            List<Long> timestamps = entry.getValue();
+            
+            if (!timestamps.isEmpty()) {
+                int cooldownSeconds = sellCooldowns.getOrDefault(material, globalSellCooldown);
+                long cooldownMillis = cooldownSeconds * 1000L;
+                
+                // Find oldest timestamp (next to expire)
+                long oldestTimestamp = timestamps.stream().min(Long::compareTo).orElse(currentTime);
+                long expiryTime = oldestTimestamp + cooldownMillis;
+                long timeRemaining = expiryTime - currentTime;
+                
+                if (timeRemaining > 0) {
+                    // This material has active cooldowns
+                    result.put(material, expiryTime);
+                }
+            }
+        }
+        
+        return result;
     }
 }

@@ -57,6 +57,9 @@ public class PlayerJoinQuit implements Listener {
         }
         User user = plugin.getUser(player);
 
+        // Unload shop cooldowns (saves them to storage)
+        plugin.getShopManager().getShop().unloadCooldowns(user.getUuid().toString());
+
         plugin.getScheduler().executeAsync(() -> {
             try {
                 plugin.getStorageProvider().saveSafely(user);
@@ -79,7 +82,14 @@ public class PlayerJoinQuit implements Listener {
 
     @EventHandler
     public void onUserLoad(UserLoadEvent event) {
-        detectUserLanguage(BukkitUser.getUser(event.getUser()), event.getPlayer());
+        User user = BukkitUser.getUser(event.getUser());
+        detectUserLanguage(user, event.getPlayer());
+        
+        // Load shop cooldowns from storage
+        plugin.getShopManager().getShop().loadCooldowns(user.getUuid().toString());
+        
+        // Load purchased abilities from storage
+        plugin.getShopManager().getShop().loadPurchasedAbilities(user.getUuid().toString());
     }
 
     private void detectUserLanguage(User user, Player player) {

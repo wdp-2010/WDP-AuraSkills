@@ -104,6 +104,9 @@ public class ArcheryAbilities extends BukkitAbilityImpl {
         double stunSpeedReduction = ability.optionDouble("speed_reduction", 0.2);
 
         if (failsChecks(player, ability)) return;
+        
+        // Check if shop-exclusive ability has been purchased
+        if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/stun")) return;
 
         if (rand.nextDouble() < (getValue(ability, user) / 100)) {
             AttributeInstance speed = entity.getAttribute(AttributeCompat.movementSpeed);

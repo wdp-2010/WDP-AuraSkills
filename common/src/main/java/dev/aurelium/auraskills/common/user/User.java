@@ -61,6 +61,7 @@ public abstract class User {
     private final Set<Skill> jobs;
     private long lastJobSelectTime;
     private final List<AntiAfkLog> sessionAntiAfkLogs;
+    private final Set<String> purchasedAbilities; // Shop-exclusive abilities that have been purchased
 
     private boolean shouldSave;
     private boolean blank = true;
@@ -92,6 +93,7 @@ public abstract class User {
         this.jobsBatchData = new JobsBatchData();
         this.sessionAntiAfkLogs = new ArrayList<>();
         this.lastJobSelectTime = 0;
+        this.purchasedAbilities = Sets.newConcurrentHashSet();
     }
 
     public AuraSkillsPlugin getPlugin() {
@@ -392,6 +394,41 @@ public abstract class User {
             return (boolean) o;
         }
         return false;
+    }
+
+    /**
+     * Gets the set of purchased shop-exclusive abilities
+     * @return unmodifiable set of ability keys (e.g., "auraskills/growth_aura")
+     */
+    public Set<String> getPurchasedAbilities() {
+        return Collections.unmodifiableSet(purchasedAbilities);
+    }
+
+    /**
+     * Checks if the user has purchased a specific shop-exclusive ability
+     * @param abilityKey the ability key (e.g., "auraskills/growth_aura")
+     * @return true if purchased, false otherwise
+     */
+    public boolean hasPurchasedAbility(String abilityKey) {
+        return purchasedAbilities.contains(abilityKey.toLowerCase());
+    }
+
+    /**
+     * Adds an ability to the purchased abilities set
+     * @param abilityKey the ability key to add
+     */
+    public void addPurchasedAbility(String abilityKey) {
+        purchasedAbilities.add(abilityKey.toLowerCase());
+        blank = false; // Mark as modified
+    }
+
+    /**
+     * Removes an ability from the purchased abilities set (for admin commands/refunds)
+     * @param abilityKey the ability key to remove
+     */
+    public void removePurchasedAbility(String abilityKey) {
+        purchasedAbilities.remove(abilityKey.toLowerCase());
+        blank = false;
     }
 
     public List<KeyIntPair> getUnclaimedItems() {

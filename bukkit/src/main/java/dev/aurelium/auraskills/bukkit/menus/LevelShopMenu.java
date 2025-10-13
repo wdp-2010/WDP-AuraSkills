@@ -35,9 +35,7 @@ public class LevelShopMenu implements Listener {
     }
     
     public void openLevelShop(Player player) {
-        plugin.getLogger().info("LevelShopMenu - Opening level shop for " + player.getName());
-        
-        Inventory inventory = Bukkit.createInventory(null, 54, "§e§lLevel Shop");
+        Inventory inventory = Bukkit.createInventory(null, 54, "§eLevel Shop");
         
         User user = plugin.getUser(player);
         

@@ -150,6 +150,8 @@ public class FightingAbilities extends BukkitAbilityImpl {
 
     public void checkBleed(EntityDamageByEntityEvent event, User user, LivingEntity entity, Ability ability) {
         if (rand.nextDouble() < (getValue(ability, user) / 100)) {
+            // Check if shop-exclusive ability has been purchased
+            if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/bleed")) return;
             // Return if damage is fatal
             if (event.getFinalDamage() >= entity.getHealth()) return;
 

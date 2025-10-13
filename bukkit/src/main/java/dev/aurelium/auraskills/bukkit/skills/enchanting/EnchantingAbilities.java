@@ -139,6 +139,9 @@ public class EnchantingAbilities extends BukkitAbilityImpl {
 
         User user = plugin.getUser(player);
 
+        // Check if shop-exclusive ability has been purchased
+        if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/lucky_table")) return;
+
         for (Map.Entry<Enchantment, Integer> entry : event.getEnchantsToAdd().entrySet()) {
             if (entry.getKey().getMaxLevel() > entry.getValue()) { // Make sure enchant isn't already maxed
                 if (rand.nextDouble() < getValue(ability, user) / 100) {

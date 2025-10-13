@@ -32,29 +32,21 @@ public class AbilityShopMenu implements Listener {
     }
     
     public void openAbilityShop(Player player) {
-        plugin.getLogger().info("AbilityShopMenu - Opening ability shop for " + player.getName());
+        Inventory inventory = Bukkit.createInventory(null, 54, "§dAbility Shop");
         
-        Inventory inventory = Bukkit.createInventory(null, 54, "§d§lAbility Shop");
-        
-        // Add decorative border
         addDecorativeBorder(inventory);
-        
         populateAbilityShop(inventory, player);
-        
-        // Add navigation items
         addNavigationItems(inventory, player);
         
         player.openInventory(inventory);
     }
     
     private void addDecorativeBorder(Inventory inventory) {
-        // Add decorative glass panes for visual organization
         ItemStack borderPane = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
         ItemMeta borderMeta = borderPane.getItemMeta();
-        borderMeta.setDisplayName("§8");  // Empty name
+        borderMeta.setDisplayName(" ");
         borderPane.setItemMeta(borderMeta);
         
-        // Top and bottom borders
         int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 50, 51, 52, 53};
         for (int slot : borderSlots) {
             inventory.setItem(slot, borderPane);
@@ -62,7 +54,6 @@ public class AbilityShopMenu implements Listener {
     }
     
     private void populateAbilityShop(Inventory inventory, Player player) {
-        plugin.getLogger().info("AbilityShopMenu - Populating ability shop");
         
         Map<String, SkillPointsShop.BuyableAbility> buyableAbilities = shop.getBuyableAbilities();
         User user = plugin.getUser(player);
@@ -94,44 +85,36 @@ public class AbilityShopMenu implements Listener {
     }
     
     private ItemStack createAbilityItem(String abilityKey, SkillPointsShop.BuyableAbility buyableAbility, User user) {
-        // Try to get the actual ability object for checking if player owns it
         NamespacedId abilityId = NamespacedId.fromDefault(abilityKey);
         Ability ability = plugin.getAbilityRegistry().getOrNull(abilityId);
         
         ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
         
-        // Use display name from shop config or fallback to ability key
         String displayName = buyableAbility.displayName != null && !buyableAbility.displayName.isEmpty() 
             ? convertColorCodes(buyableAbility.displayName)
             : (ability != null ? ability.getDisplayName(user.getLocale()) : abilityKey);
-        meta.setDisplayName("§d§l" + displayName);
+        meta.setDisplayName("§d" + displayName);
         
         List<String> lore = new ArrayList<>();
         
-        // Add custom description from shop config
         if (buyableAbility.description != null && !buyableAbility.description.isEmpty()) {
             for (String descLine : buyableAbility.description) {
                 lore.add("§7" + convertColorCodes(descLine));
             }
         } else if (ability != null) {
-            // Fallback to API description
             lore.add("§7" + ability.getDescription(user.getLocale()));
         }
-        lore.add("");
+        lore.add(" ");
         
-        // Check if player already has this ability
         boolean hasAbility = ability != null && user.getAbilityLevel(ability) > 0;
         
         if (hasAbility) {
-            lore.add("§a§l✓ Already Purchased");
-            item.setType(Material.BOOK); // Different icon for owned abilities
+            lore.add("§aAlready purchased");
+            item.setType(Material.BOOK);
         } else {
-            // Price
-            lore.add("§6Price: §e" + buyableAbility.cost + " §7Skill Coins");
-            lore.add("");
+            lore.add("§7Price: §e" + buyableAbility.cost + " ⛁");
             
-            // Requirements
             if (buyableAbility.requiredSkill != null && !buyableAbility.requiredSkill.isEmpty()) {
                 NamespacedId skillId = NamespacedId.fromDefault(buyableAbility.requiredSkill);
                 Skill requiredSkill = plugin.getSkillRegistry().getOrNull(skillId);
@@ -140,23 +123,22 @@ public class AbilityShopMenu implements Listener {
                 int playerLevel = requiredSkill != null ? user.getSkillLevel(requiredSkill) : 0;
                 boolean meetsRequirement = playerLevel >= buyableAbility.requiredLevel;
                 
+                lore.add(" ");
                 if (meetsRequirement) {
-                    lore.add("§7▸ Requirement: §a§l✓ " + skillName + " Level " + buyableAbility.requiredLevel);
+                    lore.add("§7Requires: §a" + skillName + " " + buyableAbility.requiredLevel);
                 } else {
-                    lore.add("§7▸ Requirement: §c§l✗ " + skillName + " Level " + buyableAbility.requiredLevel);
-                    lore.add("§c  (You have level " + playerLevel + ")");
+                    lore.add("§7Requires: §c" + skillName + " " + buyableAbility.requiredLevel);
+                    lore.add("§8>You have level " + playerLevel);
                 }
             }
             
-            lore.add("");
+            lore.add(" ");
             
-            // Check if player can afford
             double playerBalance = user.getSkillCoins();
             if (playerBalance >= buyableAbility.cost) {
-                lore.add("§a§lClick to purchase!");
+                lore.add("§eClick to purchase");
             } else {
-                lore.add("§c§lInsufficient Skill Coins!");
-                lore.add("§c(Need " + (buyableAbility.cost - playerBalance) + " more)");
+                lore.add("§cNot enough coins");
             }
         }
         
@@ -167,36 +149,30 @@ public class AbilityShopMenu implements Listener {
     }
     
     private void addNavigationItems(Inventory inventory, Player player) {
-        // Back button
         ItemStack backItem = new ItemStack(Material.ARROW);
         ItemMeta backMeta = backItem.getItemMeta();
-        backMeta.setDisplayName("§c§l← Back to Main Shop");
+        backMeta.setDisplayName("§eBack to Shop");
         List<String> backLore = new ArrayList<>();
-        backLore.add("§7Return to the main shop menu");
+        backLore.add("§7Return to main menu");
         backMeta.setLore(backLore);
         backItem.setItemMeta(backMeta);
         inventory.setItem(45, backItem);
         
-        // Close button
         ItemStack closeItem = new ItemStack(Material.BARRIER);
         ItemMeta closeMeta = closeItem.getItemMeta();
-        closeMeta.setDisplayName("§c§lClose");
+        closeMeta.setDisplayName("§cClose");
         List<String> closeLore = new ArrayList<>();
-        closeLore.add("§7Close the shop menu");
+        closeLore.add("§7Close the menu");
         closeMeta.setLore(closeLore);
         closeItem.setItemMeta(closeMeta);
         inventory.setItem(53, closeItem);
         
-        // Player balance info
         User user = plugin.getUser(player);
-        ItemStack balanceItem = new ItemStack(Material.GOLD_INGOT);
+        ItemStack balanceItem = new ItemStack(Material.SUNFLOWER);
         ItemMeta balanceMeta = balanceItem.getItemMeta();
-        balanceMeta.setDisplayName("§6§lYour Balance");
+        balanceMeta.setDisplayName("§6Your Balance");
         List<String> balanceLore = new ArrayList<>();
-        balanceLore.add("§7Skill Coins: §e§l" + String.format("%.0f", user.getSkillCoins()));
-        balanceLore.add("");
-        balanceLore.add("§7Use skill coins to purchase");
-        balanceLore.add("§7new abilities and upgrades!");
+        balanceLore.add("§e" + String.format("%.0f", user.getSkillCoins()) + " ⛁");
         balanceMeta.setLore(balanceLore);
         balanceItem.setItemMeta(balanceMeta);
         inventory.setItem(49, balanceItem);
@@ -265,35 +241,19 @@ public class AbilityShopMenu implements Listener {
         User user = plugin.getUser(player);
         
         try {
-            // Use the shop's purchase method
             SkillPointsShop.AbilityPurchaseResult result = shop.purchaseAbility(user, abilityKey);
             
             if (result.success) {
                 String displayName = buyableAbility.displayName != null && !buyableAbility.displayName.isEmpty() 
                     ? convertColorCodes(buyableAbility.displayName) : abilityKey;
-                player.sendMessage("§a§lPurchase Successful! §7You learned the " + displayName + " ability!");
-                // Refresh the menu to show updated state
+                player.sendMessage("§aPurchased " + displayName);
                 openAbilityShop(player);
             } else {
-                player.sendMessage("§c§lError: §7" + result.errorMessage);
-                
-                // Provide more specific feedback based on common error types
-                if (result.errorMessage.contains("Insufficient skill coins")) {
-                    double needed = buyableAbility.cost - user.getSkillCoins();
-                    player.sendMessage("§c§lYou need " + needed + " more skill coins.");
-                } else if (result.errorMessage.contains("requirements")) {
-                    if (buyableAbility.requiredSkill != null) {
-                        NamespacedId skillId = NamespacedId.fromDefault(buyableAbility.requiredSkill);
-                        Skill requiredSkill = plugin.getSkillRegistry().getOrNull(skillId);
-                        String skillName = requiredSkill != null ? requiredSkill.getDisplayName(user.getLocale()) : buyableAbility.requiredSkill;
-                        player.sendMessage("§c§lRequired: " + skillName + " Level " + buyableAbility.requiredLevel);
-                    }
-                }
+                player.sendMessage("§c" + result.errorMessage);
             }
             
         } catch (Exception e) {
-            plugin.getLogger().severe("Error purchasing ability " + abilityKey + " for player " + player.getName() + ": " + e.getMessage());
-            player.sendMessage("§c§lError: §7An error occurred during purchase. Please try again.");
+            player.sendMessage("§cPurchase failed - please try again");
         }
     }
     
@@ -302,11 +262,8 @@ public class AbilityShopMenu implements Listener {
         // Nothing special needed for cleanup
     }
     
-    // Method for MenuRegistrar compatibility
     public void build(Object menu) {
-        // This method exists for compatibility with the MenuRegistrar pattern
-        // The actual menu building is handled by openAbilityShop()
-        plugin.getLogger().info("AbilityShopMenu - build() method called (compatibility mode)");
+        // Compatibility method for MenuRegistrar pattern
     }
     
     /**

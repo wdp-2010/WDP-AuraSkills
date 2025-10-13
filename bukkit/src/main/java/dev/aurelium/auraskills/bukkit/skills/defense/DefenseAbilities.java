@@ -87,12 +87,14 @@ public class DefenseAbilities extends BukkitAbilityImpl {
             if (!(entity instanceof Player player)) continue;
 
             if (failsChecks(player, ability)) return;
+            
+            User user = plugin.getUser(player);
+            // Check if shop-exclusive ability has been purchased
+            if (!plugin.getShopManager().getShop().canUseAbility(user, "auraskills/no_debuff")) return;
 
             for (PotionEffect effect : event.getPotion().getEffects()) {
                 PotionEffectType type = effect.getType();
                 if (isNegativeEffect(type)) {
-                    User user = plugin.getUser(player);
-
                     double chance = getValue(ability, user) / 100;
                     if (rand.nextDouble() < chance) {
                         if (player.hasPotionEffect(type)) continue;

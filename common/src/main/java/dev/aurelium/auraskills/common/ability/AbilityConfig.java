@@ -42,4 +42,8 @@ public class AbilityConfig extends OptionProvider {
         return getInt("max_level");
     }
 
+    public boolean shopExclusive() {
+        return getBoolean("shop_exclusive", false);
+    }
+
 }
