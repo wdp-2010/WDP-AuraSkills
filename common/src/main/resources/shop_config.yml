@@ -179,6 +179,7 @@ sell_items:
       enabled: true
       price: 120.0
       cooldown: 1200  # 20 minutes
+      max_amount: 2  # Can sell 2, each releases after 20 minutes individually
       display_name: "<dark_gray>Wither Skeleton Skull"
       lore:
         - "<gray>Needed to summon the Wither"
@@ -187,6 +188,8 @@ sell_items:
     SKELETON_SKULL:
       enabled: true
       price: 40.0
+      cooldown: 1200  # 20 minutes
+      max_amount: 2  # Can sell 2, each releases after 20 minutes individually
       display_name: "<white>Skeleton Skull"
       lore:
         - "<gray>Rare mob drop"
@@ -195,6 +198,8 @@ sell_items:
     ZOMBIE_HEAD:
       enabled: true
       price: 40.0
+      cooldown: 1200  # 20 minutes
+      max_amount: 2  # Can sell 2, each releases after 20 minutes individually
       display_name: "<green>Zombie Head"
       lore:
         - "<gray>Rare mob drop"
@@ -203,6 +208,8 @@ sell_items:
     CREEPER_HEAD:
       enabled: true
       price: 40.0
+      cooldown: 1200  # 20 minutes
+      max_amount: 2  # Can sell 2, each releases after 20 minutes individually
       display_name: "<green>Creeper Head"
       lore:
         - "<gray>Rare mob drop"
@@ -211,6 +218,8 @@ sell_items:
     SPONGE:
       enabled: true
       price: 100.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<yellow>Sponge"
       lore:
         - "<gray>Found in ocean monuments"
@@ -219,66 +228,68 @@ sell_items:
     NAUTILUS_SHELL:
       enabled: true
       price: 120.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<blue>Nautilus Shell"
       lore:
         - "<gray>Rare ocean treasure"
         - "<yellow>Sells for: {price} coins"
-    
-    # ═══════════════════════════════════════════════════════════════════════
-    # TIER 4: Valuable Items (50-100 coins)
-    # ═══════════════════════════════════════════════════════════════════════
-    EMERALD:
-      enabled: true
-      price: 80.0
-      cooldown: 900  # 15 minutes
-      display_name: "<green>Emerald"
-      lore:
-        - "<gray>Rare trading gem"
-        - "<yellow>Sells for: {price} coins"
-    
+
     DIAMOND:
       enabled: true
       price: 60.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<aqua>Diamond"
       lore:
         - "<gray>Precious gem"
         - "<yellow>Sells for: {price} coins"
-    
+
     SHULKER_SHELL:
       enabled: true
       price: 90.0
+      cooldown: 1200  # 20 minutes
+      max_amount: 4  # Can sell 4, each releases after 20 minutes individually
       display_name: "<purple>Shulker Shell"
       lore:
         - "<gray>Dropped by shulkers in the End"
         - "<yellow>Sells for: {price} coins"
-    
+
     SHULKER_BOX:
       enabled: true
       price: 100.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 2  # Can sell 2, each releases after 30 minutes individually
       display_name: "<purple>Shulker Box"
       lore:
         - "<gray>Portable storage solution"
         - "<yellow>Sells for: {price} coins"
-    
+
     GHAST_TEAR:
       enabled: true
       price: 70.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<white>Ghast Tear"
       lore:
         - "<gray>Rare nether drop"
         - "<yellow>Sells for: {price} coins"
-    
+
     ENDER_PEARL:
       enabled: true
       price: 50.0
+      cooldown: 600  # 10 minutes
+      max_amount: 10  # Can sell 10, each releases after 10 minutes individually
       display_name: "<dark_purple>Ender Pearl"
       lore:
         - "<gray>Teleportation item"
         - "<yellow>Sells for: {price} coins"
-    
+
     BLAZE_ROD:
       enabled: true
       price: 60.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<gold>Blaze Rod"
       lore:
         - "<gray>Essential nether resource"
@@ -290,62 +301,78 @@ sell_items:
     ENCHANTED_GOLDEN_APPLE:
       enabled: true
       price: 150.0
+      cooldown: 3600  # 1 hour
+      max_amount: 1  # Can sell 1, wait 1 hour for it to be available again
       display_name: "<gold>Enchanted Golden Apple"
       lore:
         - "<gray>Extremely rare god apple"
         - "<yellow>Sells for: {price} coins"
-    
+
     MUSIC_DISC_5:
       enabled: true
       price: 100.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<aqua>Music Disc (5)"
       lore:
         - "<gray>Rare ancient city disc"
         - "<yellow>Sells for: {price} coins"
-    
+
     MUSIC_DISC_PIGSTEP:
       enabled: true
       price: 80.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<red>Music Disc (Pigstep)"
       lore:
         - "<gray>Rare bastion disc"
         - "<yellow>Sells for: {price} coins"
-    
+
     ECHO_SHARD:
       enabled: true
       price: 90.0
+      cooldown: 1800  # 30 minutes
+      max_amount: 3  # Can sell 3, each releases after 30 minutes individually
       display_name: "<dark_aqua>Echo Shard"
       lore:
         - "<gray>Found in ancient cities"
         - "<yellow>Sells for: {price} coins"
-    
+
     NETHERITE_SCRAP:
       enabled: true
       price: 65.0
+      cooldown: 1200  # 20 minutes
+      max_amount: 4  # Can sell 4, each releases after 20 minutes individually
       display_name: "<dark_red>Netherite Scrap"
       lore:
         - "<gray>Refined from ancient debris"
         - "<yellow>Sells for: {price} coins"
-    
+
     PRISMARINE_CRYSTALS:
       enabled: true
       price: 40.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<aqua>Prismarine Crystals"
       lore:
         - "<gray>Guardian drop"
         - "<yellow>Sells for: {price} coins"
-    
+
     PRISMARINE_SHARD:
       enabled: true
       price: 30.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<blue>Prismarine Shard"
       lore:
         - "<gray>Guardian drop"
         - "<yellow>Sells for: {price} coins"
-    
+
     RABBIT_FOOT:
       enabled: true
       price: 45.0
+      cooldown: 900  # 15 minutes
+      max_amount: 5  # Can sell 5, each releases after 15 minutes individually
       display_name: "<white>Rabbit's Foot"
       lore:
         - "<gray>Lucky rare drop"
