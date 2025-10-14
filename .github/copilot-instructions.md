@@ -161,9 +161,15 @@ Use IntelliJ Checkstyle-IDEA plugin with `config/checkstyle/checkstyle.xml` for 
 - `/sk shop debug` - Display current shop state, prices, and player balance
 - `/sk shop reload` - Reload shop configuration without server restart
 
-## Commit Guidelines
+## AI Agent Workflow
 
-- **Subject**: Imperative mood ("Add ...", not "Added ..."), max 72 chars, capitalized, no period
-- **No commit prefixes**: Don't use "fix:", "feat:", etc.
-- **Config paths**: Wrap in backticks like \`some.config.path\`
-- **Multiple changes**: Separate with blank line + body paragraph
+### Completion Protocol
+- **DO NOT provide summaries** of changes made - the user can see the git diff
+- **ALWAYS commit your changes** when finishing a request using available GitHub MCP tools
+- **Use descriptive commit messages** following project conventions:
+  - Imperative mood ("Add ...", not "Added ...")
+  - Max 72 characters, capitalized, no period
+  - No commit prefixes ("fix:", "feat:", etc.)
+  - Wrap config paths in backticks like \`some.config.path\`
+- **Stage all relevant files** before committing
+- **Let the git history speak** - avoid verbose explanations of what was changed

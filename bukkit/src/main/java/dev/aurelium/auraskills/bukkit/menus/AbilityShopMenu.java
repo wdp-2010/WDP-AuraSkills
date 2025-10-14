@@ -58,8 +58,8 @@ public class AbilityShopMenu implements Listener {
         Map<String, SkillPointsShop.BuyableAbility> buyableAbilities = shop.getBuyableAbilities();
         User user = plugin.getUser(player);
         
-        int row = 0;
-        int col = 0;
+        int row = 1;
+        int col = 1;
         int maxCols = 7; // Leave slots 7 and 8 for navigation/decoration
         int maxRows = 5; // Rows 0-4, leaving row 5 for navigation
         

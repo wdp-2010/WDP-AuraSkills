@@ -39,16 +39,19 @@ public class LevelShopMenu implements Listener {
         
         User user = plugin.getUser(player);
         
-        // Add decorative border
-        addDecorativeBorder(inventory);
+        // Fill with black glass panes like skills menu
+        ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName(" ");
+        filler.setItemMeta(fillerMeta);
         
-        // Add balance info at top center
+        for (int i = 0; i < 54; i++) {
+            inventory.setItem(i, filler);
+        }
+        
+        // Balance info at top left (like skills menu)
         ItemStack balanceItem = createBalanceItem(user);
-        inventory.setItem(4, balanceItem);
-        
-        // Add info item
-        ItemStack infoItem = createInfoItem();
-        inventory.setItem(22, infoItem);
+        inventory.setItem(0, balanceItem);
         
         // Add skill categories with organized layout
         addSkillCategories(inventory, user);
@@ -59,19 +62,6 @@ public class LevelShopMenu implements Listener {
         player.openInventory(inventory);
     }
     
-    private void addDecorativeBorder(Inventory inventory) {
-        // Add decorative glass panes for visual organization
-        ItemStack borderPane = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
-        ItemMeta borderMeta = borderPane.getItemMeta();
-        borderMeta.setDisplayName("§8");  // Empty name
-        borderPane.setItemMeta(borderMeta);
-        
-        // Top and bottom borders (slots 0-8 and 45-53, excluding navigation slots)
-        int[] borderSlots = {0, 1, 2, 3, 5, 6, 7, 8, 9, 17, 18, 26, 27, 35, 36, 44, 45, 46, 47, 48, 50, 51, 52, 53};
-        for (int slot : borderSlots) {
-            inventory.setItem(slot, borderPane);
-        }
-    }
     
     private void addSkillCategories(Inventory inventory, User user) {
         // Organize skills by categories for better UX
@@ -110,99 +100,25 @@ public class LevelShopMenu implements Listener {
     }
     
     private void addNavigationItems(Inventory inventory) {
-        // Add back button (bottom-left)
+        // Add back button (bottom-left, like skills menu)
         ItemStack backItem = createBackItem();
         inventory.setItem(45, backItem);
         
-        // Add close button (bottom-right)
+        // Add close button (bottom-right, like skills menu)
         ItemStack closeItem = createCloseItem();
         inventory.setItem(53, closeItem);
-        
-        // Add help item (bottom-center-left)
-        ItemStack helpItem = createHelpItem();
-        inventory.setItem(48, helpItem);
-        
-        // Add refresh item (bottom-center-right)
-        ItemStack refreshItem = createRefreshItem();
-        inventory.setItem(50, refreshItem);
     }
     
     private ItemStack createBalanceItem(User user) {
-        ItemStack item = new ItemStack(Material.GOLD_INGOT);
+        ItemStack item = new ItemStack(Material.SUNFLOWER);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§6§lYour Balance");
+        meta.setDisplayName("§6Skill Coins Balance");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Skill Coins: §e§l" + String.format("%.0f", user.getSkillCoins()));
-        lore.add("");
-        lore.add("§a§lLevel Shop");
-        lore.add("§7▸ Purchase skill levels directly");
-        lore.add("§7▸ Skip the grinding");
-        lore.add("§7▸ Configurable level limits");
-        
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
-    private ItemStack createInfoItem() {
-        ItemStack item = new ItemStack(Material.BOOK);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§b§lLevel Purchase Info");
-        
-        List<String> lore = new ArrayList<>();
-        lore.add("§7Click on any skill below to");
-        lore.add("§7purchase the next level.");
-        lore.add("");
-        lore.add("§e§lPricing:");
-        lore.add("§7▸ Each level costs more");
-        lore.add("§7▸ Formula: Base × Level × 1.5");
-        lore.add("");
-        lore.add("§c§lLimits:");
-        lore.add("§7▸ Some skills have purchase limits");
-        lore.add("§7▸ Check config for details");
-        
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
-    private ItemStack createHelpItem() {
-        ItemStack item = new ItemStack(Material.PAPER);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§a§lHelp & Tips");
-        
-        List<String> lore = new ArrayList<>();
-        lore.add("§7§lSkill Categories:");
-        lore.add("§c⚔ §7Combat: Fighting, Archery, Defense");
-        lore.add("§6⛏ §7Gathering: Mining, Foraging, Fishing");
-        lore.add("§e🔨 §7Production: Farming, Excavation, Forging");
-        lore.add("§d✨ §7Magic: Alchemy, Enchanting, Sorcery");
-        lore.add("§a💚 §7Life: Agility, Endurance, Healing");
-        lore.add("");
-        lore.add("§7§lTips:");
-        lore.add("§7▸ Higher levels cost more coins");
-        lore.add("§7▸ Some skills have purchase limits");
-        lore.add("§7▸ Balance your skill development");
-        
-        meta.setLore(lore);
-        item.setItemMeta(meta);
-        return item;
-    }
-    
-    private ItemStack createRefreshItem() {
-        ItemStack item = new ItemStack(Material.CLOCK);
-        ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§6§lRefresh Menu");
-        
-        List<String> lore = new ArrayList<>();
-        lore.add("§7Click to refresh the menu and");
-        lore.add("§7update all level information.");
-        lore.add("");
-        lore.add("§e§lUseful when:");
-        lore.add("§7▸ Levels changed outside menu");
-        lore.add("§7▸ Balance updated externally");
-        lore.add("§7▸ Menu data seems outdated");
+        lore.add("§7Your current balance:");
+        lore.add("§e" + String.format("%.0f", user.getSkillCoins()) + " ⛁");
+        lore.add(" ");
+        lore.add("§8Purchase skill levels below");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -279,10 +195,10 @@ public class LevelShopMenu implements Listener {
     private ItemStack createBackItem() {
         ItemStack item = new ItemStack(Material.ARROW);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§e§l← Back to Main Menu");
+        meta.setDisplayName("§eBack to Shop");
         
         List<String> lore = new ArrayList<>();
-        lore.add("§7Return to the main shop menu");
+        lore.add("§7Return to main menu");
         
         meta.setLore(lore);
         item.setItemMeta(meta);
@@ -292,13 +208,7 @@ public class LevelShopMenu implements Listener {
     private ItemStack createCloseItem() {
         ItemStack item = new ItemStack(Material.BARRIER);
         ItemMeta meta = item.getItemMeta();
-        meta.setDisplayName("§c§lClose");
-        
-        List<String> lore = new ArrayList<>();
-        lore.add("§7Close the shop menu");
-        
-        meta.setLore(lore);
-        item.setItemMeta(meta);
+        meta.setDisplayName("§cClose");
         return item;
     }
     
@@ -351,22 +261,11 @@ public class LevelShopMenu implements Listener {
             return;
         }
         
-        // Handle navigation and utility buttons
+        // Handle navigation buttons
         switch (slot) {
             case 45: // Back
                 player.closeInventory();
                 plugin.getMainShopMenu().openMainMenu(player);
-                break;
-                
-            case 48: // Help
-                // Help button - could show additional help info or tips
-                player.sendMessage("§a§l[Level Shop] §7Tip: Focus on skills that complement your playstyle!");
-                break;
-                
-            case 50: // Refresh
-                // Refresh the menu
-                player.closeInventory();
-                plugin.getScheduler().executeSync(() -> openLevelShop(player));
                 break;
                 
             case 53: // Close
