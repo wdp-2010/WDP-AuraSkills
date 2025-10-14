@@ -32,7 +32,9 @@ public class AbilityShopMenu implements Listener {
     }
     
     public void openAbilityShop(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, 54, "§dAbility Shop");
+        User user = plugin.getUser(player);
+        String title = "§dAbility Shop §8| §e" + String.format("%.0f", user.getSkillCoins()) + " ⛁";
+        Inventory inventory = Bukkit.createInventory(null, 54, title);
         
         addDecorativeBorder(inventory);
         populateAbilityShop(inventory, player);
@@ -54,31 +56,30 @@ public class AbilityShopMenu implements Listener {
     }
     
     private void populateAbilityShop(Inventory inventory, Player player) {
-        
         Map<String, SkillPointsShop.BuyableAbility> buyableAbilities = shop.getBuyableAbilities();
         User user = plugin.getUser(player);
         
-        int row = 1;
-        int col = 1;
-        int maxCols = 7; // Leave slots 7 and 8 for navigation/decoration
-        int maxRows = 5; // Rows 0-4, leaving row 5 for navigation
+        int row = 1; // Start at row 1 (skip top border row 0)
+        int col = 1; // Start at column 1 (skip left border column 0)
+        int maxCols = 7; // Columns 1-7 (leave 8 for right border)
+        int maxRows = 4; // Rows 1-4 (leave row 5 for navigation)
         
         for (Map.Entry<String, SkillPointsShop.BuyableAbility> entry : buyableAbilities.entrySet()) {
             String abilityKey = entry.getKey();
             SkillPointsShop.BuyableAbility buyableAbility = entry.getValue();
             
+            if (row > maxRows) break; // Don't overflow into navigation area
+            
             // Calculate slot position (row * 9 + col)
             int slot = row * 9 + col;
-            
-            if (row >= maxRows) break; // Don't overflow into navigation area
             
             ItemStack abilityItem = createAbilityItem(abilityKey, buyableAbility, user);
             inventory.setItem(slot, abilityItem);
             
             // Move to next position
             col++;
-            if (col >= maxCols) {
-                col = 0;
+            if (col > maxCols) {
+                col = 1; // Reset to first content column
                 row++;
             }
         }
@@ -88,57 +89,73 @@ public class AbilityShopMenu implements Listener {
         NamespacedId abilityId = NamespacedId.fromDefault(abilityKey);
         Ability ability = plugin.getAbilityRegistry().getOrNull(abilityId);
         
-        ItemStack item = new ItemStack(Material.ENCHANTED_BOOK);
+        // Check if player has PURCHASED the ability (not just unlocked it)
+        boolean hasPurchased = user.hasPurchasedAbility(abilityKey);
+        
+        ItemStack item = new ItemStack(hasPurchased ? Material.BOOK : Material.ENCHANTED_BOOK);
         ItemMeta meta = item.getItemMeta();
         
         String displayName = buyableAbility.displayName != null && !buyableAbility.displayName.isEmpty() 
             ? convertColorCodes(buyableAbility.displayName)
             : (ability != null ? ability.getDisplayName(user.getLocale()) : abilityKey);
-        meta.setDisplayName("§d" + displayName);
+        
+        // Add purchase indicator to display name
+        meta.setDisplayName((hasPurchased ? "§a✓ " : "§d") + displayName);
         
         List<String> lore = new ArrayList<>();
         
+        // Add description from shop_config.yml (cleaner, more detailed)
         if (buyableAbility.description != null && !buyableAbility.description.isEmpty()) {
             for (String descLine : buyableAbility.description) {
-                lore.add("§7" + convertColorCodes(descLine));
+                lore.add(convertColorCodes(descLine));
             }
         } else if (ability != null) {
             lore.add("§7" + ability.getDescription(user.getLocale()));
         }
-        lore.add(" ");
         
-        boolean hasAbility = ability != null && user.getAbilityLevel(ability) > 0;
+        lore.add("");
         
-        if (hasAbility) {
-            lore.add("§aAlready purchased");
-            item.setType(Material.BOOK);
+        if (hasPurchased) {
+            // Show purchase status and current level
+            lore.add("§a✓ Purchased");
+            if (ability != null) {
+                int abilityLevel = user.getAbilityLevel(ability);
+                if (abilityLevel > 0) {
+                    lore.add("§8Current Level: §7" + abilityLevel);
+                } else {
+                    lore.add("§8Level up your skill to unlock!");
+                }
+            }
         } else {
-            lore.add("§7Price: §e" + buyableAbility.cost + " ⛁");
+            // Show requirements and purchase info
+            boolean canAfford = user.getSkillCoins() >= buyableAbility.cost;
+            boolean meetsLevelReq = true;
             
             if (buyableAbility.requiredSkill != null && !buyableAbility.requiredSkill.isEmpty()) {
                 NamespacedId skillId = NamespacedId.fromDefault(buyableAbility.requiredSkill);
                 Skill requiredSkill = plugin.getSkillRegistry().getOrNull(skillId);
-                String skillName = requiredSkill != null ? requiredSkill.getDisplayName(user.getLocale()) : buyableAbility.requiredSkill;
-                
                 int playerLevel = requiredSkill != null ? user.getSkillLevel(requiredSkill) : 0;
-                boolean meetsRequirement = playerLevel >= buyableAbility.requiredLevel;
-                
-                lore.add(" ");
-                if (meetsRequirement) {
-                    lore.add("§7Requires: §a" + skillName + " " + buyableAbility.requiredLevel);
-                } else {
-                    lore.add("§7Requires: §c" + skillName + " " + buyableAbility.requiredLevel);
-                    lore.add("§8>You have level " + playerLevel);
-                }
+                meetsLevelReq = playerLevel >= buyableAbility.requiredLevel;
             }
             
-            lore.add(" ");
-            
-            double playerBalance = user.getSkillCoins();
-            if (playerBalance >= buyableAbility.cost) {
-                lore.add("§eClick to purchase");
+            lore.add("§7Status:");
+            if (canAfford && meetsLevelReq) {
+                lore.add("  §a✓ All requirements met");
+                lore.add("");
+                lore.add("§e▶ Click to purchase!");
             } else {
-                lore.add("§cNot enough coins");
+                if (!canAfford) {
+                    double needed = buyableAbility.cost - user.getSkillCoins();
+                    lore.add("  §c✗ Need " + String.format("%.0f", needed) + " more coins");
+                } else {
+                    lore.add("  §a✓ Sufficient coins");
+                }
+                
+                if (!meetsLevelReq) {
+                    lore.add("  §c✗ Skill level too low");
+                } else {
+                    lore.add("  §a✓ Level requirement met");
+                }
             }
         }
         
@@ -226,15 +243,18 @@ public class AbilityShopMenu implements Listener {
     
     private int getAbilityIndexFromSlot(int slot) {
         // Convert slot position back to ability index for grid layout
-        // Abilities are arranged in a 7x5 grid (7 columns, 5 rows)
-        int row = slot / 9 + 1;
-        int col = slot % 9 + 1;
+        // Abilities are arranged in a 7-column grid starting at row 1, column 1
+        int row = slot / 9;
+        int col = slot % 9;
         
-        // Check if slot is in valid ability area (columns 0-6, rows 0-4)
-        if (row >= 5 || col >= 7) return -1;
+        // Check if slot is in valid ability area (rows 1-4, columns 1-7)
+        if (row < 1 || row > 4 || col < 1 || col > 7) {
+            return -1;
+        }
         
         // Calculate ability index based on grid position
-        return row * 7 + col;
+        // Row 1 col 1 = index 0, row 1 col 2 = index 1, etc.
+        return (row - 1) * 7 + (col - 1);
     }
     
     private void purchaseAbility(Player player, String abilityKey, SkillPointsShop.BuyableAbility buyableAbility) {

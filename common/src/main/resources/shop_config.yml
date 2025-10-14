@@ -517,120 +517,151 @@ buy_items:
 buyable_abilities:
   enabled: true
   
-  # List of abilities that can be purchased
-  # Format: ability_key -> cost and requirements
+  # Shop-Exclusive Abilities - Must be purchased to use
+  # All abilities unlock at skill level 5 but require purchase from shop
+  # Pricing is balanced based on ability power and utility
   abilities:
-    # Farming - Growth Aura (powerful AOE effect) - Level 25 requirement
-    auraskills/growth_aura:
-      cost: 3000.0
-      skill_requirement: auraskills/farming
-      required_level: 25
-      display_name: "<green>Growth Aura"
-      description:
-        - "<gray>Crops within 30 blocks grow faster"
-        - "<gray>A powerful farming enhancement"
-        - ""
-        - "<yellow>Requirements:"
-        - "  <gray>• Farming Level 25"
-        - "  <gray>• 3000 Skill Coins"
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 1: Essential Abilities (1500-2000 coins) - Early game access
+    # ═══════════════════════════════════════════════════════════════════════
     
-    # Mining - Hardened Armor (defensive boost) - Level 30 requirement  
-    auraskills/hardened_armor:
-      cost: 4000.0
-      skill_requirement: auraskills/mining
-      required_level: 30
-      display_name: "<blue>Hardened Armor"
-      description:
-        - "<gray>Reduced damage while mining"
-        - "<gray>Essential for deep excavations"
-        - ""
-        - "<yellow>Requirements:"
-        - "  <gray>• Mining Level 30"
-        - "  <gray>• 4000 Skill Coins"
-    
-    # Fighting - Bleed (combat advantage) - Level 35 requirement
-    auraskills/bleed:
-      cost: 5000.0
-      skill_requirement: auraskills/fighting
-      required_level: 35
-      display_name: "<dark_red>Bleed"
-      description:
-        - "<gray>Chance to make enemies bleed"
-        - "<gray>Powerful in extended combat"
-        - ""
-        - "<yellow>Requirements:"
-        - "  <gray>• Fighting Level 35"
-        - "  <gray>• 5000 Skill Coins"
-    
-    # Archery - Stun (crowd control) - Level 30 requirement
+    # Archery - Stun (crowd control)
     auraskills/stun:
-      cost: 3500.0
+      cost: 1500.0
       skill_requirement: auraskills/archery
-      required_level: 30
+      required_level: 5
       display_name: "<yellow>Stun"
       description:
         - "<gray>Chance to stun enemies with arrows"
-        - "<gray>Powerful crowd control ability"
+        - "<dark_gray>• Base: <white>2.0%"
+        - "<dark_gray>• Per Level: <white>+1.0%"
+        - "<dark_gray>• Effect: <white>20% speed reduction"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Archery Level 30"
-        - "  <gray>• 3500 Skill Coins"
+        - "  <gray>• Archery Level 5"
+        - "  <gray>• 1,500 Skill Coins"
     
-    # Fishing - Epic Catch (rare loot) - Level 40 requirement
-    auraskills/epic_catch:
-      cost: 6000.0
-      skill_requirement: auraskills/fishing
-      required_level: 40
-      display_name: "<aqua>Epic Catch"
+    # Mining - Hardened Armor (defensive boost)
+    auraskills/hardened_armor:
+      cost: 1800.0
+      skill_requirement: auraskills/mining
+      required_level: 5
+      display_name: "<blue>Hardened Armor"
       description:
-        - "<gray>Chance to catch epic treasures"
-        - "<gray>Legendary fishing ability"
+        - "<gray>Reduced damage while mining"
+        - "<dark_gray>• Base: <white>3.0% damage reduction"
+        - "<dark_gray>• Per Level: <white>+3.0%"
+        - "<gray>Essential for deep excavations"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Fishing Level 40"
-        - "  <gray>• 6000 Skill Coins"
+        - "  <gray>• Mining Level 5"
+        - "  <gray>• 1,800 Skill Coins"
     
-    # Defense - No Debuff (immunity) - Level 45 requirement
-    auraskills/no_debuff:
-      cost: 7000.0
-      skill_requirement: auraskills/defense
-      required_level: 45
-      display_name: "<light_purple>No Debuff"
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 2: Powerful Abilities (2500-3500 coins) - Mid game power spike
+    # ═══════════════════════════════════════════════════════════════════════
+    
+    # Farming - Growth Aura (AOE farming buff)
+    auraskills/growth_aura:
+      cost: 2500.0
+      skill_requirement: auraskills/farming
+      required_level: 5
+      display_name: "<green>Growth Aura"
       description:
-        - "<gray>Immunity to negative effects"
-        - "<gray>Ultimate defensive ability"
+        - "<gray>Crops within 30 blocks grow faster"
+        - "<dark_gray>• Base: <white>12.0% growth speed"
+        - "<dark_gray>• Per Level: <white>+12.0%"
+        - "<dark_gray>• Radius: <white>30 blocks"
+        - "<gray>Powerful farming enhancement"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Defense Level 45"
-        - "  <gray>• 7000 Skill Coins"
+        - "  <gray>• Farming Level 5"
+        - "  <gray>• 2,500 Skill Coins"
     
-    # Excavation - Lucky Spades (treasure finding) - Level 35 requirement
+    # Fighting - Bleed (combat DOT)
+    auraskills/bleed:
+      cost: 3000.0
+      skill_requirement: auraskills/fighting
+      required_level: 5
+      display_name: "<dark_red>Bleed"
+      description:
+        - "<gray>Chance to make enemies bleed"
+        - "<dark_gray>• Chance: <white>3.0% + 3.0% per level"
+        - "<dark_gray>• Damage: <white>0.5 + 0.5 per level"
+        - "<dark_gray>• Duration: <white>3-11 ticks (2-22s)"
+        - "<gray>Powerful in extended combat"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Fighting Level 5"
+        - "  <gray>• 3,000 Skill Coins"
+    
+    # Excavation - Lucky Spades (treasure finding)
     auraskills/lucky_spades:
-      cost: 4500.0
+      cost: 2800.0
       skill_requirement: auraskills/excavation
-      required_level: 35
+      required_level: 5
       display_name: "<gold>Lucky Spades"
       description:
         - "<gray>Chance to find rare treasures"
+        - "<dark_gray>• Base: <white>0.05% treasure chance"
+        - "<dark_gray>• Per Level: <white>+0.03%"
         - "<gray>While digging with spades"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Excavation Level 35"
-        - "  <gray>• 4500 Skill Coins"
+        - "  <gray>• Excavation Level 5"
+        - "  <gray>• 2,800 Skill Coins"
     
-    # Enchanting - Lucky Table (enhancement boost) - Level 50 requirement
+    # ═══════════════════════════════════════════════════════════════════════
+    # TIER 3: Elite Abilities (4000-5000 coins) - Late game advantages
+    # ═══════════════════════════════════════════════════════════════════════
+    
+    # Defense - No Debuff (immunity)
+    auraskills/no_debuff:
+      cost: 4500.0
+      skill_requirement: auraskills/defense
+      required_level: 5
+      display_name: "<light_purple>No Debuff"
+      description:
+        - "<gray>Immunity to negative effects"
+        - "<dark_gray>• Base: <white>5.0% chance"
+        - "<dark_gray>• Per Level: <white>+5.0%"
+        - "<gray>Ultimate defensive ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Defense Level 5"
+        - "  <gray>• 4,500 Skill Coins"
+    
+    # Fishing - Epic Catch (rare loot)
+    auraskills/epic_catch:
+      cost: 4000.0
+      skill_requirement: auraskills/fishing
+      required_level: 5
+      display_name: "<aqua>Epic Catch"
+      description:
+        - "<gray>Chance to catch epic treasures"
+        - "<dark_gray>• Base: <white>0.2% epic chance"
+        - "<dark_gray>• Per Level: <white>+0.2%"
+        - "<gray>Legendary fishing ability"
+        - ""
+        - "<yellow>Requirements:"
+        - "  <gray>• Fishing Level 5"
+        - "  <gray>• 4,000 Skill Coins"
+    
+    # Enchanting - Lucky Table (enhancement boost)
     auraskills/lucky_table:
-      cost: 8000.0
+      cost: 5000.0
       skill_requirement: auraskills/enchanting
-      required_level: 50
+      required_level: 5
       display_name: "<purple>Lucky Table"
       description:
         - "<gray>Better enchantment outcomes"
+        - "<dark_gray>• Base: <white>5.0% luck bonus"
+        - "<dark_gray>• Per Level: <white>+1.0%"
         - "<gray>Master enchanter ability"
         - ""
         - "<yellow>Requirements:"
-        - "  <gray>• Enchanting Level 50"
-        - "  <gray>• 8000 Skill Coins"
+        - "  <gray>• Enchanting Level 5"
+        - "  <gray>• 5,000 Skill Coins"
 
 # Balance Settings
 balance:
