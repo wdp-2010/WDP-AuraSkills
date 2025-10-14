@@ -42,6 +42,8 @@ public class ReloadExecutor {
         plugin.getTraitManager().getTraitImpl(DamageReductionTrait.class).resetFormula();
         plugin.getTraitManager().getTraitImpl(AnvilDiscountTrait.class).resetFormula();
         plugin.getLevelManager().getLeveler(BlockLeveler.class).clearSourceCache();
+        // Reload shop configuration
+        plugin.getShopManager().getShop().loadConfiguration();
         // Load menus
         plugin.getMenuFileManager().generateDefaultFiles();
         plugin.getMenuFileManager().loadMenus();

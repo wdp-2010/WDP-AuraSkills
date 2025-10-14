@@ -84,12 +84,12 @@ public class ShopCommand extends BaseCommand {
     @Description("Reloads the shop configuration")
     public void onReload(CommandSender sender) {
         try {
-            // The shop configuration is loaded on each ShopMenu instantiation,
-            // so we just need to notify the sender
-            sender.sendMessage("§aShop configuration will be reloaded on next shop open.");
-            sender.sendMessage("§7Note: Shop config is automatically loaded from shop_config.yml");
+            plugin.getShopManager().getShop().loadConfiguration();
+            sender.sendMessage("§aShop configuration reloaded successfully!");
+            sender.sendMessage("§7Loaded from shop_config.yml");
         } catch (Exception e) {
             sender.sendMessage("§cFailed to reload shop configuration: " + e.getMessage());
+            e.printStackTrace();
         }
     }
 
