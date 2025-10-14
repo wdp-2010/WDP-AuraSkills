@@ -161,6 +161,115 @@ Use IntelliJ Checkstyle-IDEA plugin with `config/checkstyle/checkstyle.xml` for 
 - `/sk shop debug` - Display current shop state, prices, and player balance
 - `/sk shop reload` - Reload shop configuration without server restart
 
+## Menu Design Patterns
+
+### Consistent Layout Standards
+
+All inventory menus follow a unified design pattern for consistency:
+
+**Inventory Size:**
+- Main menus: 45 slots (5 rows)
+- Sub-menus: 54 slots (6 rows) when more space needed
+
+**Background Filler:**
+```java
+// Always use BLACK glass panes for consistency with skills menu
+ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+ItemMeta fillerMeta = filler.getItemMeta();
+fillerMeta.setDisplayName(" ");
+filler.setItemMeta(fillerMeta);
+
+for (int i = 0; i < inventorySize; i++) {
+    inventory.setItem(i, filler);
+}
+```
+
+**Standard Slot Positions:**
+- **Slot 0** (Top-Left): Balance/Info display
+  - Always use `Material.SUNFLOWER` for balance items
+  - Format: `§6Skill Coins Balance` title
+  - Show current balance: `§e{amount} ⛁`
+- **Slot 45** (Bottom-Left): Back button
+  - Always use `Material.ARROW`
+  - Title: `§eBack to Shop` or `§eBack to {Parent}`
+  - Action: Return to parent menu
+- **Slot 53** (Bottom-Right): Close button  
+  - Always use `Material.BARRIER`
+  - Title: `§cClose`
+  - Action: Close inventory
+
+**Content Layout (54-slot inventory):**
+```
+Organized grid pattern (like LevelShopMenu/AbilityShopMenu):
+Row 1: Slots 10, 11, 12 (3 items centered)
+Row 2: Slots 19, 20, 21 (3 items centered)
+Row 3: Slots 28, 29, 30 (3 items centered)
+Row 4: Slots 37, 38, 39 (3 items centered) - if needed
+
+This creates a clean, centered 3-column layout
+```
+
+**Content Layout (45-slot inventory):**
+```
+MainShopMenu pattern:
+Slot 11: First category item
+Slot 13: Second category item
+Slot 15: Third category item
+Slot 22: Additional info/tracker item (if needed)
+```
+
+**Title Conventions:**
+- Main menu: `§6Skill Coins Shop`
+- Item shop: `§bItem Shop`
+- Level shop: `§eLevel Shop`
+- Ability shop: `§dAbility Shop`
+- **Never** include dynamic data (like balance) in titles - use info items instead
+
+**Event Handler Pattern:**
+```java
+@EventHandler
+public void onInventoryClick(InventoryClickEvent event) {
+    // Use equals() for exact title matching
+    if (!event.getView().getTitle().equals("§dYour Menu Title")) return;
+    
+    event.setCancelled(true);
+    
+    if (!(event.getWhoClicked() instanceof Player player)) return;
+    
+    ItemStack clickedItem = event.getCurrentItem();
+    if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+    
+    int slot = event.getSlot();
+    
+    // Handle navigation first
+    switch (slot) {
+        case 45: // Back button
+            player.closeInventory();
+            parentMenu.openParentMenu(player);
+            break;
+        case 53: // Close button
+            player.closeInventory();
+            break;
+        // Handle content slots
+    }
+}
+```
+
+**Item Creation Best Practices:**
+- Use `Material` constants, never magic strings
+- Always set display names with color codes
+- Use empty string `" "` for separator lines in lore
+- Format numbers: `String.format("%.0f", amount)` for whole numbers
+- Use `⛁` symbol for Skill Coins consistently
+
+**Color Scheme Standards:**
+- Balance/Currency: `§6` (gold) and `§e` (yellow)
+- Success/Purchased: `§a` (green) with `✓` checkmark
+- Failure/Locked: `§c` (red) with `✗` cross
+- Info/Description: `§7` (gray) and `§8` (dark gray)
+- Requirements: `§7` prefix, `§a` when met, `§c` when not met
+- Navigation: `§e` (yellow) for back/actions, `§c` (red) for close
+
 ## AI Agent Workflow
 
 ### Completion Protocol

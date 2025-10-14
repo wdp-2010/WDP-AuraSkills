@@ -32,56 +32,71 @@ public class AbilityShopMenu implements Listener {
     }
     
     public void openAbilityShop(Player player) {
-        User user = plugin.getUser(player);
-        String title = "§dAbility Shop §8| §e" + String.format("%.0f", user.getSkillCoins()) + " ⛁";
-        Inventory inventory = Bukkit.createInventory(null, 54, title);
+        Inventory inventory = Bukkit.createInventory(null, 54, "§dAbility Shop");
         
-        addDecorativeBorder(inventory);
-        populateAbilityShop(inventory, player);
-        addNavigationItems(inventory, player);
+        User user = plugin.getUser(player);
+        
+        // Fill with black glass panes (consistent with MainShopMenu and skills menu)
+        ItemStack filler = new ItemStack(Material.BLACK_STAINED_GLASS_PANE);
+        ItemMeta fillerMeta = filler.getItemMeta();
+        fillerMeta.setDisplayName(" ");
+        filler.setItemMeta(fillerMeta);
+        
+        for (int i = 0; i < 54; i++) {
+            inventory.setItem(i, filler);
+        }
+        
+        // Balance info at top left (consistent with MainShopMenu)
+        ItemStack balanceItem = createBalanceItem(user);
+        inventory.setItem(0, balanceItem);
+        
+        // Populate abilities in organized layout
+        populateAbilityShop(inventory, user);
+        
+        // Navigation items at bottom
+        addNavigationItems(inventory);
         
         player.openInventory(inventory);
     }
     
-    private void addDecorativeBorder(Inventory inventory) {
-        ItemStack borderPane = new ItemStack(Material.PURPLE_STAINED_GLASS_PANE);
-        ItemMeta borderMeta = borderPane.getItemMeta();
-        borderMeta.setDisplayName(" ");
-        borderPane.setItemMeta(borderMeta);
+    private ItemStack createBalanceItem(User user) {
+        ItemStack item = new ItemStack(Material.SUNFLOWER);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§6Skill Coins Balance");
         
-        int[] borderSlots = {0, 1, 2, 3, 4, 5, 6, 7, 8, 45, 46, 47, 48, 50, 51, 52, 53};
-        for (int slot : borderSlots) {
-            inventory.setItem(slot, borderPane);
-        }
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Your current balance:");
+        lore.add("§e" + String.format("%.0f", user.getSkillCoins()) + " ⛁");
+        lore.add(" ");
+        lore.add("§8Purchase exclusive abilities below");
+        
+        meta.setLore(lore);
+        item.setItemMeta(meta);
+        return item;
     }
     
-    private void populateAbilityShop(Inventory inventory, Player player) {
+    private void populateAbilityShop(Inventory inventory, User user) {
         Map<String, SkillPointsShop.BuyableAbility> buyableAbilities = shop.getBuyableAbilities();
-        User user = plugin.getUser(player);
         
-        int row = 1; // Start at row 1 (skip top border row 0)
-        int col = 1; // Start at column 1 (skip left border column 0)
-        int maxCols = 7; // Columns 1-7 (leave 8 for right border)
-        int maxRows = 4; // Rows 1-4 (leave row 5 for navigation)
+        // Organized layout: abilities arranged by skill category
+        // Using 3 columns, centered in the inventory
+        int[] slots = {
+            10, 11, 12,  // Row 1 - Farming, Mining, Fishing abilities
+            19, 20, 21,  // Row 2 - Excavation, Archery, Defense abilities  
+            28, 29, 30   // Row 3 - Fighting, Enchanting abilities
+        };
         
+        int slotIndex = 0;
         for (Map.Entry<String, SkillPointsShop.BuyableAbility> entry : buyableAbilities.entrySet()) {
+            if (slotIndex >= slots.length) break; // Don't overflow available slots
+            
             String abilityKey = entry.getKey();
             SkillPointsShop.BuyableAbility buyableAbility = entry.getValue();
             
-            if (row > maxRows) break; // Don't overflow into navigation area
-            
-            // Calculate slot position (row * 9 + col)
-            int slot = row * 9 + col;
-            
             ItemStack abilityItem = createAbilityItem(abilityKey, buyableAbility, user);
-            inventory.setItem(slot, abilityItem);
+            inventory.setItem(slots[slotIndex], abilityItem);
             
-            // Move to next position
-            col++;
-            if (col > maxCols) {
-                col = 1; // Reset to first content column
-                row++;
-            }
+            slotIndex++;
         }
     }
     
@@ -165,7 +180,8 @@ public class AbilityShopMenu implements Listener {
         return item;
     }
     
-    private void addNavigationItems(Inventory inventory, Player player) {
+    private void addNavigationItems(Inventory inventory) {
+        // Back button at bottom left (slot 45 - consistent with MainShopMenu)
         ItemStack backItem = new ItemStack(Material.ARROW);
         ItemMeta backMeta = backItem.getItemMeta();
         backMeta.setDisplayName("§eBack to Shop");
@@ -175,48 +191,36 @@ public class AbilityShopMenu implements Listener {
         backItem.setItemMeta(backMeta);
         inventory.setItem(45, backItem);
         
+        // Close button at bottom right (slot 53 - consistent with MainShopMenu)
         ItemStack closeItem = new ItemStack(Material.BARRIER);
         ItemMeta closeMeta = closeItem.getItemMeta();
         closeMeta.setDisplayName("§cClose");
-        List<String> closeLore = new ArrayList<>();
-        closeLore.add("§7Close the menu");
-        closeMeta.setLore(closeLore);
         closeItem.setItemMeta(closeMeta);
         inventory.setItem(53, closeItem);
-        
-        User user = plugin.getUser(player);
-        ItemStack balanceItem = new ItemStack(Material.SUNFLOWER);
-        ItemMeta balanceMeta = balanceItem.getItemMeta();
-        balanceMeta.setDisplayName("§6Your Balance");
-        List<String> balanceLore = new ArrayList<>();
-        balanceLore.add("§e" + String.format("%.0f", user.getSkillCoins()) + " ⛁");
-        balanceMeta.setLore(balanceLore);
-        balanceItem.setItemMeta(balanceMeta);
-        inventory.setItem(49, balanceItem);
     }
     
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (!event.getView().getTitle().contains("Ability Shop")) return;
+        if (!event.getView().getTitle().equals("§dAbility Shop")) return;
         
         event.setCancelled(true);
         
         if (!(event.getWhoClicked() instanceof Player player)) return;
         
+        ItemStack clickedItem = event.getCurrentItem();
+        if (clickedItem == null || clickedItem.getType() == Material.AIR) return;
+        
         int slot = event.getSlot();
         
-        // Handle navigation
+        // Handle navigation buttons
         if (slot == 45) { // Back button
+            player.closeInventory();
             plugin.getMainShopMenu().openMainMenu(player);
             return;
         }
         
         if (slot == 53) { // Close button
             player.closeInventory();
-            return;
-        }
-        
-        if (slot == 49) { // Balance info - do nothing
             return;
         }
         
@@ -227,10 +231,19 @@ public class AbilityShopMenu implements Listener {
     private void handleAbilityPurchase(Player player, int slot) {
         Map<String, SkillPointsShop.BuyableAbility> buyableAbilities = shop.getBuyableAbilities();
         
-        // Calculate which ability this slot corresponds to
-        int abilityIndex = getAbilityIndexFromSlot(slot);
+        // Map slots to ability indices
+        int[] validSlots = {10, 11, 12, 19, 20, 21, 28, 29, 30};
+        int abilityIndex = -1;
+        
+        for (int i = 0; i < validSlots.length; i++) {
+            if (validSlots[i] == slot) {
+                abilityIndex = i;
+                break;
+            }
+        }
+        
         if (abilityIndex < 0 || abilityIndex >= buyableAbilities.size()) {
-            return; // Invalid slot
+            return; // Invalid slot or no ability in this position
         }
         
         // Get the ability at this index
@@ -239,22 +252,6 @@ public class AbilityShopMenu implements Listener {
         SkillPointsShop.BuyableAbility buyableAbility = buyableAbilities.get(abilityKey);
         
         purchaseAbility(player, abilityKey, buyableAbility);
-    }
-    
-    private int getAbilityIndexFromSlot(int slot) {
-        // Convert slot position back to ability index for grid layout
-        // Abilities are arranged in a 7-column grid starting at row 1, column 1
-        int row = slot / 9;
-        int col = slot % 9;
-        
-        // Check if slot is in valid ability area (rows 1-4, columns 1-7)
-        if (row < 1 || row > 4 || col < 1 || col > 7) {
-            return -1;
-        }
-        
-        // Calculate ability index based on grid position
-        // Row 1 col 1 = index 0, row 1 col 2 = index 1, etc.
-        return (row - 1) * 7 + (col - 1);
     }
     
     private void purchaseAbility(Player player, String abilityKey, SkillPointsShop.BuyableAbility buyableAbility) {
