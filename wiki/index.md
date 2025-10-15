@@ -1,17 +1,39 @@
 ---
-description: Welcome to the AuraSkills wiki!
+description: Welcome to the WDP AuraSkills wiki!
 ---
 
-# AuraSkills
+# WDP AuraSkills
 
-**AuraSkills** (formerly **Aurelium Skills**) is a Minecraft plugin that adds [skills](skills/), [stats](stats/), [abilities](abilities.md), and other RPG-related features.
-Developed for the Spigot and Paper server platforms, the plugin can be downloaded for free on the official [plugin website](https://aurelium.dev/auraskills/download), [SpigotMC](https://www.spigotmc.org/resources/81069/), [Hangar](https://hangar.papermc.io/Archy/AuraSkills), and [Modrinth](https://modrinth.com/plugin/auraskills). The plugin is fully configurable and customizable, enabling use on a wide-range of server types from small SMPs to large, custom MMORPG networks.
+**WDP AuraSkills** is a custom rework of AuraSkills (formerly **Aurelium Skills**), enhanced specifically for the **WDPServer** community at `play.wdpserver.com`. This version adds [skills](skills/), [stats](stats/), [abilities](abilities.md), and a revolutionary **[SkillCoins economy system](skillcoins.md)** that transforms progression into a dynamic marketplace.
 
-This wiki contains documentation on how to set up, configure, and use the plugin. Support from the developer is provided on the [Discord](https://discord.gg/Bh2EZfB) server, where users can also give suggestions, report bugs, and get announcements. AuraSkills is open-sourced on [GitHub](https://github.com/Archy-X/AuraSkills).
+This is a fork of the original AuraSkills by Archy-X, developed for the Spigot and Paper server platforms. While maintaining full compatibility with the core plugin features, this rework introduces a complete economy system with an integrated shop, player-to-player transfers, and Vault compatibility.
+
+This wiki contains documentation on how to set up, configure, and use both the core AuraSkills features and the new SkillCoins economy. The source code is available on [GitHub](https://github.com/wdp-2010/WDP-AuraSkills).
+
+## 💰 SkillCoins Economy (NEW!)
+
+> Main article: [SkillCoins](skillcoins.md)
+
+The biggest feature in this rework is the fully-integrated **SkillCoins economy system**. Players earn coins by leveling skills and can spend them in an interactive shop to buy levels, XP, abilities, and items.
+
+Key features:
+- **Earn coins** by leveling any skill with exponential scaling
+- **Shop system** (`/shop`) with multiple categories
+- **Player transfers** (`/pay`) for trading between players
+- **Admin commands** for economy management
+- **Vault integration** for compatibility with other plugins
+
+See the complete [SkillCoins guide](skillcoins.md) for details on earning, spending, and managing the economy.
 
 ## Overview
 
-Players level up [skills](skills/) by gaining skill XP through general Minecraft tasks, such as Farming, Mining, Fighting, or Enchanting. Increasing levels for each skill gives the player [stat buffs](stats/), unlocks and levels up [passive](abilities.md) and [mana abilities](mana-abilities.md), and other customizable [rewards](rewards.md). Using `/skills`, players can view all the relevant information about skills and gameplay in fully-configurable inventory GUI [menus](menus.md). Certain Fishing and Excavation abilities drop custom loot, which can be customized and extended to other skills through [loot tables](loot.md). Players can compete with each other through leaderboards and rankings. Custom items can also be created that give [stat modifiers](stats/stat-modifiers.md) when held or worn, [skill requirements](skills/item-requirements.md) to use, and [XP multipliers](skills/xp-multipliers.md#item-and-armor-multipliers). Numerous [commands](commands.md) and [permissions](permissions.md) allow server admins to manage players and control access to features.
+Players level up [skills](skills/) by gaining skill XP through general Minecraft tasks, such as Farming, Mining, Fighting, or Enchanting. Increasing levels for each skill gives the player [stat buffs](stats/), unlocks and levels up [passive](abilities.md) and [mana abilities](mana-abilities.md), **earns [SkillCoins](skillcoins.md)**, and other customizable [rewards](rewards.md). 
+
+Using `/skills`, players can view all the relevant information about skills and gameplay in fully-configurable inventory GUI [menus](menus.md). The new `/shop` command opens an interactive marketplace where SkillCoins can be spent on skill levels, XP boosts, custom abilities, and rare items.
+
+Certain Fishing and Excavation abilities drop custom loot, which can be customized and extended to other skills through [loot tables](loot.md). Players can compete with each other through leaderboards and rankings, and now also trade SkillCoins using the `/pay` command.
+
+Custom items can also be created that give [stat modifiers](stats/stat-modifiers.md) when held or worn, [skill requirements](skills/item-requirements.md) to use, and [XP multipliers](skills/xp-multipliers.md#item-and-armor-multipliers). Numerous [commands](commands.md) and [permissions](permissions.md) allow server admins to manage players, control access to features, and manage the economy.
 
 ## Skills
 
@@ -33,7 +55,19 @@ There are multiple configuration files in the `plugins/AuraSkills` directory tha
 
 > Main article: [Main Config](main-config/)
 
-The main `config.yml` file is used for general or miscellaneous config options related to storage/database, external plugin hooks, languages, action bar, boss bar, worlds/regions, modifiers, requirements, and more.
+The main `config.yml` file is used for general or miscellaneous config options related to storage/database, external plugin hooks, languages, action bar, boss bar, worlds/regions, modifiers, requirements, **SkillCoins economy settings**, and more.
+
+### SkillCoins & Shop Config
+
+> Main article: [SkillCoins#Configuration](skillcoins.md#for-admins)
+
+The `shop_config.yml` file controls all aspects of the SkillCoins economy including:
+
+* Level purchase costs and per-skill pricing
+* Level-up reward amounts and scaling
+* Sellable items with prices and cooldowns
+* Buyable items in the market
+* Custom abilities with costs and requirements
 
 ### Skills
 
